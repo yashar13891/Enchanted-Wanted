@@ -79,11 +79,9 @@ public class SQLiteManager implements DatabaseManager {
         }
         if (amount < 1) return;
 
-        int currentWanted = getWanted(uuid);
-        int newWanted = Math.max(currentWanted - amount, 5);
         String sql = "UPDATE players SET wanted = wanted + ? WHERE uuid = ?;";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, newWanted);
+            stmt.setInt(1, amount);
             stmt.setString(2, uuid.toString());
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -98,12 +96,9 @@ public class SQLiteManager implements DatabaseManager {
         }
         if (amount < 1) return;
 
-        int currentWanted = getWanted(uuid);
-        int newWanted = Math.max(currentWanted - amount, 0);
-
         String sql = "UPDATE players SET wanted = ? WHERE uuid = ?;";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, newWanted);
+            stmt.setInt(1, amount);
             stmt.setString(2, uuid.toString());
             stmt.executeUpdate();
         } catch (SQLException e) {
