@@ -7,10 +7,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
+import org.yashar.enchantedWanted.storages.DatabaseManager;
 
 import static org.yashar.enchantedWanted.utils.MessageUtils.sendMessage;
 
 public class DamageListener implements Listener {
+
+    private DatabaseManager database;
 
     @EventHandler(priority = EventPriority.LOWEST)
     private void onDmg(EntityDamageEvent e) {
@@ -28,7 +31,12 @@ public class DamageListener implements Listener {
             if (victim.getKiller() == null) {
                 return;
             }
-            sendMessage(victim, "Hey KosKesh Wanted Gerfti");
+
+            Player killer = victim.getKiller();
+
+            database.addWanted(killer.getUniqueId(),1);
+            sendMessage(killer, "&cHey!, &7Kiri Wanted Gerfti Va Alan &e%Wanted%&7 Dari".replace("%Wanted%",String.valueOf(database.getWanted(killer.getUniqueId()))));
+            sendMessage(victim,"Salam Ye Koni Toro Kosht Mikhai Azsh Shekait Kni ???");
         }
     }
 }
