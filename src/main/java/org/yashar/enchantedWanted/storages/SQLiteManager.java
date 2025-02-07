@@ -35,10 +35,6 @@ public class SQLiteManager implements DatabaseManager {
 
     @Override
     public void createTable() {
-        if (isConnected()) {
-            logger.severe("[DataBase] Connection is null, cannot update wanted level.");
-            return;
-        }
         String sql = "CREATE TABLE IF NOT EXISTS players (uuid TEXT PRIMARY KEY, name TEXT, wanted INTEGER DEFAULT 0);";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.execute();

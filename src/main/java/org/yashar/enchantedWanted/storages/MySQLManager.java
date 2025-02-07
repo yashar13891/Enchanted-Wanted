@@ -57,11 +57,6 @@ public class MySQLManager implements DatabaseManager {
 
     @Override
     public void createTable() {
-        if (!isConnected()) {
-            logger.severe("[DataBase] Connection is null, cannot create table.");
-            return;
-        }
-
         String sql = "CREATE TABLE IF NOT EXISTS players ("
                 + "uuid VARCHAR(36) PRIMARY KEY, "
                 + "name VARCHAR(16) NOT NULL, "
