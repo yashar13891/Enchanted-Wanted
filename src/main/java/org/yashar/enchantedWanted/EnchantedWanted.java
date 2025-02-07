@@ -8,6 +8,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import org.yashar.enchantedWanted.managers.ConfigManager;
 import org.yashar.enchantedWanted.storages.*;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public final class EnchantedWanted extends JavaPlugin {
         logger = getLogger();
         logger.info("Enchanted Wanted Enabled! Thanks For Using (:");
 
-        String databaseType = getConfig().getString("database.type", "sqlite");
+        String databaseType = ConfigManager.getConfig().getString("database.type", "sqlite");
         if (databaseType.equalsIgnoreCase("mysql")) {
             database = new MySQLManager();
         }

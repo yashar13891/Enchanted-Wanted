@@ -78,14 +78,14 @@
             <artifactId>GPS</artifactId>
             <version>1</version>
             <scope>system</scope>
-            <systemPath>C:/Users/ASUS/IdeaProjects/EnchantedWanted/libs/GPS.jar</systemPath>
+            <systemPath>${project.basedir}/libs/GPS.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>CuffEm</groupId>
             <artifactId>CuffEm</artifactId>
             <version>1</version>
             <scope>system</scope>
-            <systemPath>C:/Users/ASUS/IdeaProjects/EnchantedWanted/libs/CuffEm.jar</systemPath>
+            <systemPath>${project.basedir}/libs/CuffEm.jar</systemPath>
         </dependency>
     </dependencies>
 </project>
