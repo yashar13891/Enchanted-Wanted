@@ -9,6 +9,9 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import org.yashar.enchantedWanted.managers.ConfigManager;
+
+import static org.yashar.enchantedWanted.managers.ConfigManager.setupConfig;
+
 import org.yashar.enchantedWanted.storages.*;
 
 import java.util.ArrayList;
@@ -24,6 +27,8 @@ public final class EnchantedWanted extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+
+        setupConfig();
 
         this.registerEvents();
         this.registerCommands();
@@ -50,6 +55,7 @@ public final class EnchantedWanted extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        saveConfig();
         database.disconnect();
         getLogger().severe("[Database] DataBase Disconnected!");
     }
