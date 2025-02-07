@@ -19,7 +19,7 @@ public class WantedGUI implements Listener {
     private static DatabaseManager database;
 
     public WantedGUI(DatabaseManager database) {
-        this.database = database;
+        WantedGUI.database = database;
     }
 
     public static void openWantedMenu(Player player) {
