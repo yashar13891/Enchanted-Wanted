@@ -1,7 +1,7 @@
 package org.yashar.enchantedWanted;
 
 public enum Permission {
-    ADMIN("qlark.admin");
+    ADMIN("ewanted.admin");
 
     private final String permission;
 

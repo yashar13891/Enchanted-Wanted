@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.yashar.enchantedWanted.menus.WantedGUI;
 import org.yashar.enchantedWanted.storages.DatabaseManager;
+import org.yashar.enchantedWanted.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,6 +43,8 @@ public class WantedsCommand implements TabExecutor {
             case "set" -> handleSet(player, args);
             case "add" -> handleAdd(player, args);
             case "find" -> handleFind(player, args);
+            case "gps" -> handleGPS(player);
+            case "arrest" -> handleArrest(player);
             default -> sendHelpMessage(player);
         }
         return true;
@@ -109,6 +112,9 @@ public class WantedsCommand implements TabExecutor {
             sendMessage(player, Component.text("Invalid number format!", NamedTextColor.RED));
         }
     }
+    private void handleArrest(Player player) {
+        Utils.arrestPlayer(player.getUniqueId());
+    }
 
     private void handleFind(Player player, String[] args) {
         if (checkPermission(player, "enchantedwanted.find")) return;
@@ -123,6 +129,9 @@ public class WantedsCommand implements TabExecutor {
                 .content(target.getName() + "'s wanted points: ")
                 .append(Component.text(wantedPoints, NamedTextColor.GREEN))
                 .color(NamedTextColor.GOLD));
+    }
+    private void handleGPS(Player player) {
+        Utils.startGPS(player.getUniqueId());
     }
 
     private void sendHelpMessage(Player player) {
