@@ -3,7 +3,6 @@ package org.yashar.enchantedWanted;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import org.yashar.enchantedWanted.commands.WantedsCommand;
 import org.yashar.enchantedWanted.listeners.DamageListener;
 import org.yashar.enchantedWanted.managers.ConfigManager;
