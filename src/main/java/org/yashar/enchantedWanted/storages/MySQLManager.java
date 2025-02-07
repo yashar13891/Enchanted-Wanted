@@ -115,3 +115,4 @@ public class MySQLManager implements DatabaseManager {
         return 0;
     }
 }
+

@@ -11,3 +11,4 @@ public interface DatabaseManager {
     int getWanted(String uuid);
     boolean isConnected();
 }
+

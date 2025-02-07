@@ -1,17 +1,12 @@
 package org.yashar.enchantedWanted;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import org.yashar.enchantedWanted.managers.ConfigManager;
-
-import static org.yashar.enchantedWanted.managers.ConfigManager.setupConfig;
-
 import org.yashar.enchantedWanted.storages.*;
 
 import java.util.ArrayList;
@@ -27,11 +22,6 @@ public final class EnchantedWanted extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-
-        setupConfig();
-
-        this.registerEvents();
-        this.registerCommands();
 
         logger = getLogger();
         logger.info("Enchanted Wanted Enabled! Thanks For Using (:");
@@ -55,7 +45,6 @@ public final class EnchantedWanted extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        saveConfig();
         database.disconnect();
         getLogger().severe("[Database] DataBase Disconnected!");
     }
@@ -77,13 +66,5 @@ public final class EnchantedWanted extends JavaPlugin {
 
     public static JavaPlugin getInstance() {
         return (JavaPlugin) instance;
-    }
-
-    public void registerCommands() {
-
-    }
-
-    public void registerEvents() {
-        PluginManager pluginManager = Bukkit.getPluginManager();
     }
 }
