@@ -76,21 +76,59 @@ public class MySQLManager implements DatabaseManager {
         }
     }
 
-    @Override
-    public void addWanted(UUID uuid) {
-        if (!isConnected()) {
+    public void addWanted(UUID uuid, int amount) {
+        if (isConnected()) {
             logger.severe("[DataBase] Connection is null, cannot update wanted level.");
             return;
         }
+        if (amount < 1) return;
 
-        String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, 1) "
-                + "ON DUPLICATE KEY UPDATE wanted = wanted + 1, name = VALUES(name);";
-
+        int currentWanted = getWanted(uuid);
+        int newWanted = Math.max(currentWanted - amount, 5);
+        String sql = "UPDATE players SET wanted = wanted + ? WHERE uuid = ?;";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, String.valueOf(uuid));
+            stmt.setInt(1, amount);
+            stmt.setString(2, uuid.toString());
             stmt.executeUpdate();
         } catch (SQLException e) {
-            logger.severe("[DataBase] Error updating wanted level for UUID " + uuid + ": " + e.getMessage());
+            logger.severe("[DataBase] Error increasing wanted level: " + e.getMessage());
+        }
+    }
+
+    public void removeWanted(UUID uuid, int amount) {
+        if (isConnected()) {
+            logger.severe("[DataBase] Connection is null, cannot update wanted level.");
+            return;
+        }
+        if (amount < 1) return;
+
+        int currentWanted = getWanted(uuid);
+        int newWanted = Math.max(currentWanted - amount, 0);
+
+        String sql = "UPDATE players SET wanted = ? WHERE uuid = ?;";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, newWanted);
+            stmt.setString(2, uuid.toString());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            logger.severe("[DataBase] Error decreasing wanted level: " + e.getMessage());
+        }
+    }
+
+    public void setWanted(UUID uuid, int level) {
+        if (isConnected()) {
+            logger.severe("[DataBase] Connection is null, cannot update wanted level.");
+            return;
+        }
+        if (level < 0) level = 0;
+
+        String sql = "UPDATE players SET wanted = ? WHERE uuid = ?;";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, level);
+            stmt.setString(2, uuid.toString());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            logger.severe("[DataBase] Error setting wanted level: " + e.getMessage());
         }
     }
 
