@@ -69,10 +69,6 @@ public class SQLiteManager implements DatabaseManager {
     }
 
     public void addWanted(UUID uuid, int amount) {
-        if (isConnected()) {
-            logger.severe("[DataBase] Connection is null, cannot update wanted level.");
-            return;
-        }
         if (amount < 1) return;
 
         String sql = "UPDATE players SET wanted = wanted + ? WHERE uuid = ?;";
@@ -86,10 +82,6 @@ public class SQLiteManager implements DatabaseManager {
     }
 
     public void removeWanted(UUID uuid, int amount) {
-        if (isConnected()) {
-            logger.severe("[DataBase] Connection is null, cannot update wanted level.");
-            return;
-        }
         if (amount < 1) return;
 
         String sql = "UPDATE players SET wanted = ? WHERE uuid = ?;";
@@ -103,10 +95,6 @@ public class SQLiteManager implements DatabaseManager {
     }
 
     public void setWanted(UUID uuid, int level) {
-        if (isConnected()) {
-            logger.severe("[DataBase] Connection is null, cannot update wanted level.");
-            return;
-        }
         if (level < 0) level = 0;
 
         String sql = "UPDATE players SET wanted = ? WHERE uuid = ?;";

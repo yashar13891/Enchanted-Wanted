@@ -11,7 +11,7 @@ public interface DatabaseManager {
 
     boolean isConnected();
 
-    void addWanted(UUID uuid, int amount);
+    void addWanted(UUID uuid,  int amount);
 
     int getWanted(UUID uuid);
 
