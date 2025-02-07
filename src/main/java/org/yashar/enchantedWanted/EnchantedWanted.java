@@ -41,7 +41,7 @@ public final class EnchantedWanted extends JavaPlugin {
             database = new MySQLManager();
         }
         if (databaseType.equalsIgnoreCase("sqlite")) {
-            database = new MySQLManager();
+            database = new SQLiteManager();
         }
         database.connect();
         if (database.isConnected()) {

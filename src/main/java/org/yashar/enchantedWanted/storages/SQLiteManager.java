@@ -1,9 +1,9 @@
 package org.yashar.enchantedWanted.storages;
 
 import java.sql.*;
+import java.util.UUID;
 import java.util.logging.Logger;
 
-import org.bukkit.entity.Player;
 import org.yashar.enchantedWanted.EnchantedWanted;
 
 public class SQLiteManager implements DatabaseManager {
@@ -50,14 +50,14 @@ public class SQLiteManager implements DatabaseManager {
     }
 
     @Override
-    public void addWanted(String uuid) {
+    public void addWanted(UUID uuid) {
         if (isConnected()) {
             logger.severe("[DataBase] Connection is null, cannot update wanted level.");
             return;
         }
         String sql = "UPDATE players SET wanted = wanted + 1 WHERE uuid = ?;";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, uuid);
+            stmt.setString(1, String.valueOf(uuid));
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected == 0) {
                 logger.warning("[DataBase] No player found with UUID: " + uuid);
@@ -68,16 +68,16 @@ public class SQLiteManager implements DatabaseManager {
     }
 
     @Override
-    public int getWanted(Player uuid) {
+    public int getWanted(UUID uuid) {
         String sql = "SELECT wanted FROM players WHERE uuid = ?;";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, uuid);
+            stmt.setString(1, uuid.toString());
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return rs.getInt("wanted");
             }
         } catch (SQLException e) {
-            logger.severe("[DataBase] Error retrieving wanted level: " + e.getMessage());
+            logger.severe("[DataBase] Error retrieving wanted level for UUID " + uuid + ": " + e.getMessage());
         }
         return 0;
     }
