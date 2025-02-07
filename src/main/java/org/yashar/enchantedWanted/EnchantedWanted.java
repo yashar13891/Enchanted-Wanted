@@ -6,6 +6,8 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.yashar.enchantedWanted.managers.ConfigManager;
 import org.yashar.enchantedWanted.storages.*;
+import org.yashar.enchantedWanted.utils.PluginCheckUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -30,6 +32,11 @@ public final class EnchantedWanted extends JavaPlugin {
         plugin = this;
         logger = getLogger();
 
+        // Checker
+        PluginCheckUtil.checkPlugin("PlaceholderAPI", logger);
+        PluginCheckUtil.checkPlugin("GPS", logger);
+        PluginCheckUtil.checkPlugin("CuffEm", logger);
+        logger.info("[CHECKER] EnchantedWanted Is Now Available!");
         //Database SetUp
         String databaseType = ConfigManager.getConfig().getString("database.type", "sqlite");
         if (databaseType.equalsIgnoreCase("mysql")) {

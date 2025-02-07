@@ -2,8 +2,10 @@ name: EnchantedWanted
 version: '1.0'
 main: org.yashar.enchantedWanted.EnchantedWanted
 api-version: '1.21'
-softdepend :
+load: POSTWORLD
+author: YasharMaster, _Misagh_, xVesderx
+description: 'a Simple Plugin For GTA Servers!'
+softdepend:
   - PlaceholderAPI
   - GPS
   - CuffEm
-
