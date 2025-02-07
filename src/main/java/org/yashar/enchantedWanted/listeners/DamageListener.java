@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 public class DamageListener implements Listener {
 
     @EventHandler (priority = EventPriority.LOW)
-    private void onDmg(EntityDamageEvent e) {
+    private void onDamage(EntityDamageEvent e) {
 
         ItemStack totem = new ItemStack(Material.TOTEM_OF_UNDYING);
 
