@@ -51,7 +51,7 @@ public class SQLiteManager {
                 logger.warning("[DataBase] No player found with UUID: " + uuid);
             }
         } catch (SQLException e) {
-            logger.severe("[DataBase] Error updating wanted level: " + e.getMessage());
+            logger.severe("[DataBase] Error updating wanted level:  " + e.getMessage());
         }
     }
 
