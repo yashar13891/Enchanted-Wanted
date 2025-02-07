@@ -38,7 +38,6 @@ public final class EnchantedWanted extends JavaPlugin {
         logger = getLogger();
 
         WantedGUI wantedGUI = new WantedGUI(database);
-        getServer().getPluginManager().registerEvents(wantedGUI, this);
         registerCommand("wanteds", new WantedsCommand(database), org.yashar.enchantedWanted.Permission.ADMIN);
 
         // Checker
@@ -48,6 +47,7 @@ public final class EnchantedWanted extends JavaPlugin {
 
         //Register Events
         getPluginManager().registerEvents(new DamageListener(), this);
+        getServer().getPluginManager().registerEvents(wantedGUI, this);
 
         //Database SetUp
         String databaseType = ConfigManager.getConfig().getString("database.type", "sqlite");
