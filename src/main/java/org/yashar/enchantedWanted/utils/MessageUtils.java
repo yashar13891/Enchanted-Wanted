@@ -11,10 +11,6 @@ public class MessageUtils {
         Component component = miniMessage.deserialize(message);
         player.sendMessage(String.valueOf(component));
     }
-
-    public static Component format(String message) {
-        return miniMessage.deserialize(message);
-    }
 }
 
 
