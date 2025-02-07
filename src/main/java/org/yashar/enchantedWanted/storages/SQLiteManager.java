@@ -1,15 +1,16 @@
-package org.yashar.enchantedWanted.storage;
+package org.yashar.enchantedWanted.storages;
 
 import java.sql.*;
 import java.util.logging.Logger;
+
 import org.yashar.enchantedWanted.EnchantedWanted;
 
+public class SQLiteManager implements DatabaseManager {
+    private Connection connection;
+    private final Logger logger = EnchantedWanted.getPluginLogger();
 
-public class SQLiteManager {
-    private static Connection connection;
-    private static final Logger logger = EnchantedWanted.getPluginLogger();
-
-    public static void connect() {
+    @Override
+    public void connect() {
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:plugins/EnchantedWanted/database.db");
             logger.info("[DataBase] SQLite Connected!");
@@ -18,9 +19,9 @@ public class SQLiteManager {
         }
     }
 
-    public static void disconnect() {
+    @Override
+    public void disconnect() {
         if (connection == null) return;
-
         try {
             connection.close();
             logger.info("[DataBase] SQLite Disconnected!");
@@ -31,8 +32,12 @@ public class SQLiteManager {
         }
     }
 
-
-    public static void createTable() {
+    @Override
+    public void createTable() {
+        if (isConnected()) {
+            logger.severe("[DataBase] Connection is null, cannot update wanted level.");
+            return;
+        }
         String sql = "CREATE TABLE IF NOT EXISTS players (uuid TEXT PRIMARY KEY, name TEXT, wanted INTEGER DEFAULT 0);";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.execute();
@@ -42,7 +47,12 @@ public class SQLiteManager {
         }
     }
 
-    public static void addWanted(String uuid) {
+    @Override
+    public void addWanted(String uuid) {
+        if (isConnected()) {
+            logger.severe("[DataBase] Connection is null, cannot update wanted level.");
+            return;
+        }
         String sql = "UPDATE players SET wanted = wanted + 1 WHERE uuid = ?;";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, uuid);
@@ -51,11 +61,12 @@ public class SQLiteManager {
                 logger.warning("[DataBase] No player found with UUID: " + uuid);
             }
         } catch (SQLException e) {
-            logger.severe("[DataBase] Error updating wanted level:  " + e.getMessage());
+            logger.severe("[DataBase] Error updating wanted level: " + e.getMessage());
         }
     }
 
-    public static int getWanted(String uuid) {
+    @Override
+    public int getWanted(String uuid) {
         String sql = "SELECT wanted FROM players WHERE uuid = ?;";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, uuid);
@@ -67,5 +78,14 @@ public class SQLiteManager {
             logger.severe("[DataBase] Error retrieving wanted level: " + e.getMessage());
         }
         return 0;
+    }
+
+    @Override
+    public boolean isConnected() {
+        try {
+            return connection != null && !connection.isClosed();
+        } catch (SQLException e) {
+            return false;
+        }
     }
 }
