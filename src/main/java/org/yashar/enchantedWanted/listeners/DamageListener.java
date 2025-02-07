@@ -13,7 +13,7 @@ import static org.yashar.enchantedWanted.utils.MessageUtils.sendMessage;
 
 public class DamageListener implements Listener {
 
-    private DatabaseManager database;
+    private final DatabaseManager database;
 
     public DamageListener(DatabaseManager database) {
         this.database = database;
