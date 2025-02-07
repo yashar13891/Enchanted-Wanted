@@ -1,0 +1,7 @@
+database:
+  type: "sqlite"
+  host: "localhost"
+  port: 3306
+  name: "enchanted_wanted"
+  username: "root"
+  password: ""
