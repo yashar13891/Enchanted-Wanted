@@ -43,8 +43,8 @@ public class Utils {
         Player player = Bukkit.getPlayer(uuid);
         if (player != null) {
             unCuff(player.getUniqueId());
-            database.setWanted(player.getUniqueId(),0);
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"/jail " + player.getName() + " " + database.getWanted(player.getUniqueId()) * 5);
+            database.setWanted(player.getUniqueId(),0);
 
         }
     }
