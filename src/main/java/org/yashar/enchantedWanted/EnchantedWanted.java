@@ -36,7 +36,7 @@ public final class EnchantedWanted extends JavaPlugin {
         PluginCheckUtil.checkPlugin("PlaceholderAPI", logger);
         PluginCheckUtil.checkPlugin("GPS", logger);
         PluginCheckUtil.checkPlugin("CuffEm", logger);
-        logger.info("[CHECKER] EnchantedWanted Is Now Available!");
+
         //Database SetUp
         String databaseType = ConfigManager.getConfig().getString("database.type", "sqlite");
         if (databaseType.equalsIgnoreCase("mysql")) {
