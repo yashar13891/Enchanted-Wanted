@@ -1,18 +1,16 @@
 package org.yashar.enchantedWanted.managers;
+
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.yashar.enchantedWanted.EnchantedWanted;
 import org.yashar.enchantedWanted.storages.DatabaseManager;
 
-import java.util.List;
-
 public class PlaceHolderManager extends PlaceholderExpansion {
 
-    private final EnchantedWanted plugin;
     private DatabaseManager database;
+
     public PlaceHolderManager(EnchantedWanted plugin) {
-        this.plugin = plugin;
     }
 
     @Override
@@ -40,11 +38,7 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 
                 int wantedLevel = database.getWanted(player.getUniqueId());
                 wantedLevel = Math.max(wantedLevel, 0);
-                StringBuilder stars = new StringBuilder();
-                for (int i = 0; i < wantedLevel; i++) {
-                    stars.append("★");
-                }
-                return stars.toString();
+                return "★".repeat(wantedLevel);
         }
 
         return null;

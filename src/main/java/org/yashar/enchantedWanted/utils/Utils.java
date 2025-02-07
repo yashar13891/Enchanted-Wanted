@@ -15,10 +15,11 @@ public class Utils {
         GPSAPI gpsapi = new GPSAPI(EnchantedWanted.getInstance());
         Player player = Bukkit.getPlayer(uuid);
         if (player != null) {
-        gpsapi.addPoint("wantedplayer", player.getLocation());
-        gpsapi.startGPS(player, "wantedplayer");
+            gpsapi.addPoint("wantedplayer", player.getLocation());
+            gpsapi.startGPS(player, "wantedplayer");
         }
     }
+
     public void unCuff(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
         CuffEmPlugin cuffem = Objects.requireNonNull(Bukkit.getServicesManager().getRegistration(CuffEmPlugin.class)).getProvider();
