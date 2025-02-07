@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import org.yashar.enchantedWanted.EnchantedWanted;
 
 public class SQLiteManager implements DatabaseManager {
+
     private Connection connection;
     private final Logger logger = EnchantedWanted.getPluginLogger();
 
