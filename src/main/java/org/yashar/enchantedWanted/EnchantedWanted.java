@@ -8,53 +8,31 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.yashar.enchantedWanted.storages.*;
-
 public final class EnchantedWanted extends JavaPlugin {
     public static Plugin instance;
     private static Logger logger;
-    private DatabaseManager database;
 
 
     @Override
     public void onEnable() {
         instance = this;
-
         this.registerEvents();
         this.registerCommands();
-
         logger = getLogger();
-
-        String databaseType = getConfig().getString("database.type", "sqlite");
-
         logger.info("Enchanted Wanted Enabled! Thanks For Using (:");
-
-        if (databaseType.equalsIgnoreCase("mysql")) {
-            database = new MySQLManager();
-        }
-        if (databaseType.equalsIgnoreCase("sqlite")) {
-            database = new SQLiteManager();
-        }
-        database.connect();
-        if (database.isConnected()) {
-            database.createTable();
-            getLogger().info("[Database] Database connected and ready!");
-        } else {
-            getLogger().severe("[Database] Failed to connect to database!");
-            getServer().getPluginManager().disablePlugin(this);
-        }
-    }
-    @Override
-    public void onDisable() {
-        database.disconnect();
     }
 
     public static Logger getPluginLogger() {
         return logger;
+    }
+
+    @Override
+    public void onDisable() {
     }
 
     List<PluginCommand> commands = new ArrayList<>();
