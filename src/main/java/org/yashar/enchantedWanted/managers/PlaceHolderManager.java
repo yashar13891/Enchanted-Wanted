@@ -3,14 +3,14 @@ package org.yashar.enchantedWanted.managers;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.yashar.enchantedWanted.EnchantedWanted;
 import org.yashar.enchantedWanted.storages.DatabaseManager;
 
 public class PlaceHolderManager extends PlaceholderExpansion {
 
-    private DatabaseManager database;
+    private final DatabaseManager database;
 
-    public PlaceHolderManager(EnchantedWanted plugin) {
+    public PlaceHolderManager(DatabaseManager database) {
+        this.database = database;
     }
 
     @Override
@@ -44,4 +44,3 @@ public class PlaceHolderManager extends PlaceholderExpansion {
         return null;
     }
 }
-
