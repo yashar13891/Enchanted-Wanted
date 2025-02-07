@@ -2,9 +2,9 @@ package org.yashar.enchantedWanted;
 
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import org.yashar.enchantedWanted.commands.WantedsCommand;
 import org.yashar.enchantedWanted.listeners.DamageListener;
 import org.yashar.enchantedWanted.managers.ConfigManager;
 import org.yashar.enchantedWanted.menus.WantedGUI;
@@ -39,6 +39,7 @@ public final class EnchantedWanted extends JavaPlugin {
 
         WantedGUI wantedGUI = new WantedGUI(database);
         getServer().getPluginManager().registerEvents(wantedGUI, this);
+        registerCommand("wanteds", new WantedsCommand(database), org.yashar.enchantedWanted.Permission.ADMIN);
 
         // Checker
         PluginCheckUtil.checkPlugin("PlaceholderAPI", logger);
