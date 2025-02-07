@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static org.bukkit.Bukkit.getPluginManager;
+
 public final class EnchantedWanted extends JavaPlugin {
     public static Plugin instance;
     private static Logger logger;
@@ -55,8 +57,7 @@ public final class EnchantedWanted extends JavaPlugin {
 
     }
 
-    public void registerEvents() {
-        PluginManager pluginManager = Bukkit.getPluginManager();
-        pluginManager.registerEvents(new DamageListener(),this);
+    private void registerEvents() {
+        getPluginManager().registerEvents(new DamageListener(),this);
     }
 }
