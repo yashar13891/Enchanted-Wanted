@@ -15,6 +15,10 @@ public class DamageListener implements Listener {
 
     private DatabaseManager database;
 
+    public DamageListener(DatabaseManager database) {
+        this.database = database;
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
     private void onDmg(EntityDamageEvent e) {
 

@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static org.bukkit.Bukkit.getPluginManager;
+import static org.yashar.enchantedWanted.utils.PluginCheckUtil.checkPlugin;
 
 public final class EnchantedWanted extends JavaPlugin {
 
@@ -38,16 +39,16 @@ public final class EnchantedWanted extends JavaPlugin {
         logger = getLogger();
 
         WantedGUI wantedGUI = new WantedGUI(database);
-        getServer().getPluginManager().registerEvents(wantedGUI, this);
         registerCommand("wanteds", new WantedsCommand(database), org.yashar.enchantedWanted.Permission.ADMIN);
 
         // Checker
-        PluginCheckUtil.checkPlugin("PlaceholderAPI", logger);
-        PluginCheckUtil.checkPlugin("GPS", logger);
-        PluginCheckUtil.checkPlugin("CuffEm", logger);
+        checkPlugin("PlaceholderAPI", logger);
+        checkPlugin("GPS", logger);
+        checkPlugin("CuffEm", logger);
 
         //Register Events
-        getPluginManager().registerEvents(new DamageListener(), this);
+        getPluginManager().registerEvents(new DamageListener(database), this);
+        getPluginManager().registerEvents(wantedGUI, this);
 
         //Database SetUp
         String databaseType = ConfigManager.getConfig().getString("database.type", "sqlite");
