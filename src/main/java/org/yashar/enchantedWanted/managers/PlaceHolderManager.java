@@ -20,7 +20,7 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getAuthor() {
-        return "Yashar, Misagh, Vesder";
+        return "IRDevs";
     }
 
     @Override
