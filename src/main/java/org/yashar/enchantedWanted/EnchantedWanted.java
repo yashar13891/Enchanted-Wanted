@@ -5,7 +5,6 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.yashar.enchantedWanted.commands.WantedsCommand;
 import org.yashar.enchantedWanted.listeners.DamageListener;
-import org.yashar.enchantedWanted.managers.ConfigManager;
 import org.yashar.enchantedWanted.menus.WantedGUI;
 import org.yashar.enchantedWanted.storages.*;
 import java.util.ArrayList;
@@ -31,6 +30,8 @@ public final class EnchantedWanted extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        saveDefaultConfig();
+        reloadConfig();
 
         plugin = this;
         logger = getLogger();
@@ -48,7 +49,7 @@ public final class EnchantedWanted extends JavaPlugin {
         getPluginManager().registerEvents(wantedGUI, this);
 
         //Database SetUp
-        String databaseType = ConfigManager.getConfig().getString("database.type", "sqlite");
+        String databaseType = getConfig().getString("database.type", "sqlite");
         if (databaseType.equalsIgnoreCase("mysql")) {
             database = new MySQLManager();
         }
