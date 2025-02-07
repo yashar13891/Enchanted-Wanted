@@ -16,13 +16,13 @@ import java.util.List;
 import java.util.UUID;
 
 public class WantedGUI implements Listener {
-    private final DatabaseManager database;
+    private static DatabaseManager database;
 
     public WantedGUI(DatabaseManager database) {
         this.database = database;
     }
 
-    public void openWantedMenu(Player player) {
+    public static void openWantedMenu(Player player) {
         int size = 54;
         Inventory gui = Bukkit.createInventory(null, size, "§eᴡᴀɴᴛᴇᴅs");
 
