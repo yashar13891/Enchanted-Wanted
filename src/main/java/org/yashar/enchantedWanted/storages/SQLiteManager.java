@@ -3,6 +3,7 @@ package org.yashar.enchantedWanted.storages;
 import java.sql.*;
 import java.util.logging.Logger;
 
+import org.bukkit.entity.Player;
 import org.yashar.enchantedWanted.EnchantedWanted;
 
 public class SQLiteManager implements DatabaseManager {
@@ -67,7 +68,7 @@ public class SQLiteManager implements DatabaseManager {
     }
 
     @Override
-    public int getWanted(String uuid) {
+    public int getWanted(Player uuid) {
         String sql = "SELECT wanted FROM players WHERE uuid = ?;";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, uuid);

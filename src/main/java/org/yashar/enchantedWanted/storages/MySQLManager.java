@@ -2,6 +2,8 @@ package org.yashar.enchantedWanted.storages;
 
 import java.sql.*;
 import java.util.logging.Logger;
+
+import org.bukkit.entity.Player;
 import org.yashar.enchantedWanted.EnchantedWanted;
 
 public class MySQLManager implements DatabaseManager {
@@ -93,7 +95,7 @@ public class MySQLManager implements DatabaseManager {
     }
 
     @Override
-    public int getWanted(String uuid) {
+    public int getWanted(Player uuid) {
         if (!isConnected()) {
             logger.severe("[DataBase] Connection is null, cannot retrieve wanted level.");
             return 0;
@@ -101,7 +103,7 @@ public class MySQLManager implements DatabaseManager {
 
         String sql = "SELECT wanted FROM players WHERE uuid = ?;";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, uuid);
+            stmt.setString(1, String.valueOf(uuid));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt("wanted");

@@ -1,5 +1,8 @@
 package org.yashar.enchantedWanted.storages;
 
+
+import java.util.UUID;
+
 public interface DatabaseManager {
     void connect();
     void disconnect();
