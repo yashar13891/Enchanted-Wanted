@@ -8,11 +8,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 
-import static org.yashar.enchantedWanted.utils.MessageUtils.sendMessage;
-
 public class DamageListener implements Listener {
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler (priority = EventPriority.LOW)
     private void onDmg(EntityDamageEvent e) {
 
         ItemStack totem = new ItemStack(Material.TOTEM_OF_UNDYING);
@@ -28,7 +26,7 @@ public class DamageListener implements Listener {
             if (victim.getKiller() == null) {
                 return;
             }
-            sendMessage(victim, "Hey KosKesh Wanted Gerfti");
+            victim.getKiller().sendMessage("Hey KosKesh Wanted Gerfti");
         }
 
     }
