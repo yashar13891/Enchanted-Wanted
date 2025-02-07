@@ -9,6 +9,7 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.yashar.enchantedWanted.menus.WantedGUI;
 import org.yashar.enchantedWanted.storages.DatabaseManager;
 
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ public class WantedsCommand implements TabExecutor {
 
     private void handleTop(Player player) {
         // Implementation for top wanted players
-        sendMessage(player, Component.text("Top Wanted Players:", NamedTextColor.GOLD));
+        WantedGUI.openWantedMenu(player);
     }
 
     private void handleClear(Player player, String[] args) {
