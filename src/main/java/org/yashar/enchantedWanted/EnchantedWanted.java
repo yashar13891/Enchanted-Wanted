@@ -9,8 +9,6 @@ import org.yashar.enchantedWanted.listeners.DamageListener;
 import org.yashar.enchantedWanted.managers.ConfigManager;
 import org.yashar.enchantedWanted.menus.WantedGUI;
 import org.yashar.enchantedWanted.storages.*;
-import org.yashar.enchantedWanted.utils.PluginCheckUtil;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
