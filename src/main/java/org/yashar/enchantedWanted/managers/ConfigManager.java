@@ -1,22 +1,37 @@
 package org.yashar.enchantedWanted.managers;
 
-import org.yashar.enchantedWanted.EnchantedWanted;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.yashar.enchantedWanted.EnchantedWanted;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
 public class ConfigManager {
-    public static EnchantedWanted plugin;
+    private static ConfigManager instance;
+    private static EnchantedWanted plugin = null;
     private static FileConfiguration config;
     private static File configFile;
 
+    private ConfigManager(EnchantedWanted plugin) {
+        ConfigManager.plugin = plugin;
+        loadConfig();
+    }
 
-    public static void setupConfig() {
-        if (!plugin.getDataFolder().exists()) {
-            plugin.getDataFolder().mkdirs();
+    public static void init(EnchantedWanted plugin) {
+        if (instance == null) {
+            instance = new ConfigManager(plugin);
+        }
+    }
+
+    public static ConfigManager getInstance() {
+        return instance;
+    }
+
+    public static void loadConfig() {
+        if (!plugin.getDataFolder().exists() && !plugin.getDataFolder().mkdirs()) {
+            plugin.getLogger().warning("Could not create plugin data folder!");
         }
 
         configFile = new File(plugin.getDataFolder(), "config.yml");
@@ -34,7 +49,12 @@ public class ConfigManager {
         return config;
     }
 
-    public static void saveConfig() {
+    public void saveConfig() {
+        if (config == null || configFile == null) {
+            plugin.getLogger().severe("Config file is not initialized!");
+            return;
+        }
+
         try {
             config.save(configFile);
             plugin.getLogger().info("Config file saved successfully!");
@@ -43,7 +63,12 @@ public class ConfigManager {
         }
     }
 
-    public static void reloadConfig() {
+    public void reloadConfig() {
+        if (configFile == null) {
+            plugin.getLogger().severe("Config file is not initialized!");
+            return;
+        }
+
         config = YamlConfiguration.loadConfiguration(configFile);
         plugin.getLogger().info("Config file reloaded successfully!");
     }
