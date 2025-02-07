@@ -2,4 +2,4 @@ name: EnchantedWanted
 version: '1.0'
 main: org.yashar.enchantedWanted.EnchantedWanted
 api-version: '1.21'
-softdepend: [PlaceholderAPI]
+

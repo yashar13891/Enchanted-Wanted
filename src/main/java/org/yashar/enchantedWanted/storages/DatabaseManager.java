@@ -10,3 +10,4 @@ public interface DatabaseManager {
     void addWanted(UUID uuid);
     int getWanted(UUID uuid);
 }
+
