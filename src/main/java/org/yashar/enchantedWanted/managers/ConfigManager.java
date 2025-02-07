@@ -9,15 +9,12 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 public class ConfigManager {
-    private final EnchantedWanted plugin;
-    private FileConfiguration config;
-    private File configFile;
+    public static EnchantedWanted plugin;
+    private static FileConfiguration config;
+    private static File configFile;
 
-    public ConfigManager(EnchantedWanted plugin) {
-        this.plugin = plugin;
-    }
 
-    public void setupConfig() {
+    public static void setupConfig() {
         if (!plugin.getDataFolder().exists()) {
             plugin.getDataFolder().mkdirs();
         }
@@ -33,11 +30,11 @@ public class ConfigManager {
         plugin.getLogger().info("Config file loaded successfully!");
     }
 
-    public FileConfiguration getConfig() {
+    public static FileConfiguration getConfig() {
         return config;
     }
 
-    public void saveConfig() {
+    public static void saveConfig() {
         try {
             config.save(configFile);
             plugin.getLogger().info("Config file saved successfully!");
@@ -46,7 +43,7 @@ public class ConfigManager {
         }
     }
 
-    public void reloadConfig() {
+    public static void reloadConfig() {
         config = YamlConfiguration.loadConfiguration(configFile);
         plugin.getLogger().info("Config file reloaded successfully!");
     }

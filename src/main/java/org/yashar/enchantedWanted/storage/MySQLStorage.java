@@ -4,10 +4,10 @@ import java.sql.*;
 import java.util.logging.Logger;
 import org.yashar.enchantedWanted.EnchantedWanted;
 public class MySQLStorage {
-    private Connection connection;
+    private static Connection connection;
     private static final Logger logger = EnchantedWanted.getPluginLogger();
 
-    public void connect() {
+    public static void connect() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver"); // بارگذاری درایور MySQL
             // افزودن تنظیمات اتصال به MySQL
@@ -26,7 +26,7 @@ public class MySQLStorage {
         }
     }
 
-    public void disconnect() {
+    public static void disconnect() {
         if (connection == null) return;
 
         try {
@@ -39,7 +39,7 @@ public class MySQLStorage {
         }
     }
 
-    public void createTable() {
+    public static void createTable() {
         // تغییر نوع داده INTEGER به INT برای MySQL
         String sql = "CREATE TABLE IF NOT EXISTS players ("
                 + "uuid VARCHAR(36) PRIMARY KEY, "
@@ -55,7 +55,7 @@ public class MySQLStorage {
         }
     }
 
-    public void addWanted(String uuid, String name) { // افزودن پارامتر name
+    public static void addWanted(String uuid, String name) { // افزودن پارامتر name
         // استفاده از INSERT ON DUPLICATE KEY UPDATE برای مدیریت رکوردهای جدید
         String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, 1) "
                 + "ON DUPLICATE KEY UPDATE wanted = wanted + 1, name = VALUES(name);";
@@ -69,7 +69,7 @@ public class MySQLStorage {
         }
     }
 
-    public int getWanted(String uuid) {
+    public static int getWanted(String uuid) {
         String sql = "SELECT wanted FROM players WHERE uuid = ?;";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, uuid);

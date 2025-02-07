@@ -6,10 +6,10 @@ import org.yashar.enchantedWanted.EnchantedWanted;
 
 
 public class SQLiteManager {
-    private Connection connection;
+    private static Connection connection;
     private static final Logger logger = EnchantedWanted.getPluginLogger();
 
-    public void connect() {
+    public static void connect() {
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:plugins/EnchantedWanted/database.db");
             logger.info("[DataBase] SQLite Connected!");
@@ -18,7 +18,7 @@ public class SQLiteManager {
         }
     }
 
-    public void disconnect() {
+    public static void disconnect() {
         if (connection == null) return;
 
         try {
@@ -32,7 +32,7 @@ public class SQLiteManager {
     }
 
 
-    public void createTable() {
+    public static void createTable() {
         String sql = "CREATE TABLE IF NOT EXISTS players (uuid TEXT PRIMARY KEY, name TEXT, wanted INTEGER DEFAULT 0);";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.execute();
@@ -42,7 +42,7 @@ public class SQLiteManager {
         }
     }
 
-    public void addWanted(String uuid) {
+    public static void addWanted(String uuid) {
         String sql = "UPDATE players SET wanted = wanted + 1 WHERE uuid = ?;";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, uuid);
@@ -55,7 +55,7 @@ public class SQLiteManager {
         }
     }
 
-    public int getWanted(String uuid) {
+    public static int getWanted(String uuid) {
         String sql = "SELECT wanted FROM players WHERE uuid = ?;";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, uuid);
