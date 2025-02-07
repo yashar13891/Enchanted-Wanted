@@ -73,5 +73,19 @@
                 <artifactId>adventure-text-minimessage</artifactId>
                 <version>4.14.0</version>
             </dependency>
+        <dependency>
+            <groupId>GPS</groupId>
+            <artifactId>GPS</artifactId>
+            <version>1</version>
+            <scope>system</scope>
+            <systemPath>C:/Users/ASUS/IdeaProjects/EnchantedWanted/libs/GPS.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>CuffEm</groupId>
+            <artifactId>CuffEm</artifactId>
+            <version>1</version>
+            <scope>system</scope>
+            <systemPath>C:/Users/ASUS/IdeaProjects/EnchantedWanted/libs/CuffEm.jar</systemPath>
+        </dependency>
     </dependencies>
 </project>

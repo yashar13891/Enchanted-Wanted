@@ -12,7 +12,7 @@ import static org.yashar.enchantedWanted.utils.MessageUtils.sendMessage;
 
 public class DamageListener implements Listener {
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOWEST)
     private void onDmg(EntityDamageEvent e) {
 
         ItemStack totem = new ItemStack(Material.TOTEM_OF_UNDYING);
@@ -30,8 +30,5 @@ public class DamageListener implements Listener {
             }
             sendMessage(victim, "Hey KosKesh Wanted Gerfti");
         }
-
     }
-
-
 }
