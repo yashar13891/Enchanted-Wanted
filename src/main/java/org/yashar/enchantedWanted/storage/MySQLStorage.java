@@ -9,8 +9,7 @@ public class MySQLStorage {
 
     public static void connect() {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver"); // بارگذاری درایور MySQL
-            // افزودن تنظیمات اتصال به MySQL
+            Class.forName("com.mysql.cj.jdbc.Driver");
             String host = "localhost";
             int port = 3306;
             String database = "enchanted_wanted";
@@ -40,7 +39,6 @@ public class MySQLStorage {
     }
 
     public static void createTable() {
-        // تغییر نوع داده INTEGER به INT برای MySQL
         String sql = "CREATE TABLE IF NOT EXISTS players ("
                 + "uuid VARCHAR(36) PRIMARY KEY, "
                 + "name VARCHAR(16) NOT NULL, "
@@ -55,8 +53,7 @@ public class MySQLStorage {
         }
     }
 
-    public static void addWanted(String uuid, String name) { // افزودن پارامتر name
-        // استفاده از INSERT ON DUPLICATE KEY UPDATE برای مدیریت رکوردهای جدید
+    public static void addWanted(String uuid, String name) {
         String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, 1) "
                 + "ON DUPLICATE KEY UPDATE wanted = wanted + 1, name = VALUES(name);";
 

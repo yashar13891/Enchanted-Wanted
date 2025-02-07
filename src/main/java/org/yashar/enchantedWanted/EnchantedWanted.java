@@ -7,6 +7,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.yashar.enchantedWanted.listeners.DamageListener;
 
 
 import java.util.ArrayList;
@@ -56,5 +57,6 @@ public final class EnchantedWanted extends JavaPlugin {
 
     public void registerEvents() {
         PluginManager pluginManager = Bukkit.getPluginManager();
+        pluginManager.registerEvents(new DamageListener(),this);
     }
 }
