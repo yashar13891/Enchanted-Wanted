@@ -1,9 +1,11 @@
 package org.yashar.enchantedWanted;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -15,6 +17,8 @@ public final class EnchantedWanted extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        this.registerEvents();
+        this.registerCommands();
 
     }
 
@@ -36,6 +40,6 @@ public final class EnchantedWanted extends JavaPlugin {
 
     }
     public void registerEvents() {
-
+        PluginManager pluginManager = Bukkit.getPluginManager();
     }
 }
