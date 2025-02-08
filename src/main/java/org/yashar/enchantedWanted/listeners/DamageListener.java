@@ -19,30 +19,26 @@ public class DamageListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent event) {
-        Player victim = event.getEntity();
+    public void onDeath(PlayerDeathEvent e) {
 
-        if (isHoldingTotem(victim)) {
-            return;
-        }
+        Player victim = e.getEntity(),
+                killer = victim.getKiller();
 
-        Player killer = victim.getKiller();
-        if (killer == null || killer.equals(victim)) {
+        if (isHoldingTotem(victim) || killer == null || killer.equals(victim)) {
             return;
         }
 
         database.addWanted(killer.getUniqueId(), 1);
-
         sendMessage(killer, "<#ff5733>Hey! You've been added to the wanted list. Current Wanted: %Wanted%</#ff5733>"
                 .replace("%Wanted%", String.valueOf(database.getWanted(killer.getUniqueId()))));
-
         sendMessage(victim, "<#ff5733>You were killed by a wanted player!</#ff5733>");
     }
-    private boolean isHoldingTotem(Player player) {
-        ItemStack mainHand = player.getInventory().getItemInMainHand();
-        ItemStack offHand = player.getInventory().getItemInOffHand();
 
-        return mainHand.getType() == Material.TOTEM_OF_UNDYING ||
-                offHand.getType() == Material.TOTEM_OF_UNDYING;
+    private boolean isHoldingTotem(Player player) {
+
+        ItemStack totem = new ItemStack(Material.TOTEM_OF_UNDYING);
+
+        return player.getInventory().getItemInOffHand().equals(totem) ||
+                player.getInventory().getItemInMainHand().equals(totem);
     }
 }
