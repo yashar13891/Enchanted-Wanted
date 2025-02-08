@@ -21,14 +21,9 @@ public class WorldGuardUtils {
         if (player == null) return false;
 
         Location loc = BukkitAdapter.adapt(player.getLocation());
-        if (loc == null) {
-            System.out.println("[ERROR] Player location is NULL!");
-            return false;
-        }
 
         RegionContainer container = getContainer();
         if (container == null) {
-            System.out.println("[ERROR] RegionContainer is NULL!");
             return false;
         }
 
@@ -38,7 +33,6 @@ public class WorldGuardUtils {
 
         for (ProtectedRegion region : regions) {
             StateFlag.State flagValue = region.getFlag(WGWantedFlag.WANTED_ALLOWED);
-            System.out.println("[DEBUG] Region: " + region.getId() + ", WantedAllowed: " + flagValue);
 
             if (flagValue == StateFlag.State.ALLOW) {
                 foundAllow = true;
