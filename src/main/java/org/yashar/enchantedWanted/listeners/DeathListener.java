@@ -10,11 +10,11 @@ import org.yashar.enchantedWanted.storages.DatabaseManager;
 
 import static org.yashar.enchantedWanted.utils.MessageUtils.sendMessage;
 
-public class DamageListener implements Listener {
+public class DeathListener implements Listener {
 
     private final DatabaseManager database;
 
-    public DamageListener(DatabaseManager database) {
+    public DeathListener(DatabaseManager database) {
         this.database = database;
     }
 
