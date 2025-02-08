@@ -5,3 +5,6 @@ database:
   name: "enchanted_wanted"
   username: "root"
   password: ""
+kill-commands:
+  - "[PLAYER] command"
+  - "[CONSOLE] command"

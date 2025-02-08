@@ -44,7 +44,6 @@ public class WorldGuardUtils {
             return false;
         }
 
-        boolean foundAllow = true;
 
         for (ProtectedRegion region : regions) {
             StateFlag.State flagValue = region.getFlag(WGWantedFlag.WANTED_ALLOWED);
@@ -56,14 +55,13 @@ public class WorldGuardUtils {
             }
 
             if (flagValue == StateFlag.State.ALLOW) {
-                foundAllow = true;
             } else if (flagValue == StateFlag.State.DENY) {
                 System.out.println("[DEBUG] Wanted is explicitly denied in region: " + region.getId());
-                return false;
+                return true;
             }
         }
 
-        System.out.println("[DEBUG] Wanted status result for " + player.getName() + ": " + foundAllow);
-        return foundAllow;
+        System.out.println("[DEBUG] Wanted status result for " + player.getName() + ": ");
+        return true;
     }
 }

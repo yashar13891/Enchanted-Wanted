@@ -10,66 +10,62 @@ import java.util.logging.Level;
 
 public class ConfigManager {
     private static ConfigManager instance;
-    private static EnchantedWanted plugin = null;
-    private static FileConfiguration config;
-    private static File configFile;
+    private final EnchantedWanted plugin;
+    private FileConfiguration config;
+    private final File configFile;
+    public ConfigManager(EnchantedWanted plugin) {
+        this.plugin = plugin;
 
-    private ConfigManager(EnchantedWanted plugin) {
-        ConfigManager.plugin = plugin;
-        loadConfig();
+        if (!plugin.getDataFolder().exists()) {
+            plugin.getDataFolder().mkdirs();
+        }
+
+        this.configFile = new File(plugin.getDataFolder(), "config.yml");
+        loadConfigFile();
     }
 
-    public static void init(EnchantedWanted plugin) {
+    public static ConfigManager getInstance(EnchantedWanted plugin) {
         if (instance == null) {
             instance = new ConfigManager(plugin);
         }
-    }
-
-    public static ConfigManager getInstance() {
         return instance;
     }
 
-    public static void loadConfig() {
-        if (!plugin.getDataFolder().exists() && !plugin.getDataFolder().mkdirs()) {
-            plugin.getLogger().warning("Could not create plugin data folder!");
-        }
-
-        configFile = new File(plugin.getDataFolder(), "config.yml");
-
+    public void loadConfigFile() {
         if (!configFile.exists()) {
             plugin.saveResource("config.yml", false);
-            plugin.getLogger().info("Default config file created!");
+            plugin.getLogger().info("config.yml has been loaded from resources.");
         }
-
         config = YamlConfiguration.loadConfiguration(configFile);
-        plugin.getLogger().info("Config file loaded successfully!");
     }
 
-    public static FileConfiguration getConfig() {
-        return config;
-    }
-
-    public void saveConfig() {
-        if (config == null || configFile == null) {
-            plugin.getLogger().severe("Config file is not initialized!");
-            return;
-        }
-
-        try {
-            config.save(configFile);
-            plugin.getLogger().info("Config file saved successfully!");
-        } catch (IOException e) {
-            plugin.getLogger().log(Level.SEVERE, "Could not save config file!", e);
+    public String getMessage(String key, String defaultMessage) {
+        if (config.contains(key)) {
+            return config.getString(key, defaultMessage);
+        } else {
+            return "Message not found: " + key;
         }
     }
 
     public void reloadConfig() {
-        if (configFile == null) {
-            plugin.getLogger().severe("Config file is not initialized!");
-            return;
+        if (!configFile.exists()) {
+            plugin.saveResource("config.yml", false);
+            plugin.getLogger().info("config.yml was not found, loaded from resources.");
         }
-
         config = YamlConfiguration.loadConfiguration(configFile);
-        plugin.getLogger().info("Config file reloaded successfully!");
+        plugin.getLogger().info("config.yml reloaded successfully.");
+    }
+
+    public void saveConfig() {
+        try {
+            config.save(configFile);
+            plugin.getLogger().info("config.yml saved successfully.");
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to save config.yml", e);
+        }
+    }
+
+    public FileConfiguration getConfig() {
+        return config;
     }
 }

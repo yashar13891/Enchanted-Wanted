@@ -2,6 +2,7 @@ package org.yashar.enchantedWanted;
 
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import org.yashar.enchantedWanted.commands.*;
@@ -11,6 +12,7 @@ import org.yashar.enchantedWanted.managers.*;
 import org.yashar.enchantedWanted.menus.*;
 import org.yashar.enchantedWanted.storages.*;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.bukkit.Bukkit.getPluginManager;
@@ -29,15 +31,13 @@ public final class EnchantedWanted extends JavaPlugin {
     public static Logger getPluginLogger() {
         return logger;
     }
+    ConfigManager configManager = new ConfigManager(this);
 
     @Override
     public void onEnable() {
         plugin = this;
         logger = getLogger();
-
-        ConfigManager.init(this);
-        ConfigManager.loadConfig();
-
+        loadConfigDefaults();
         BStatsManager.setup(this);
 
         setupDatabase();
@@ -53,14 +53,14 @@ public final class EnchantedWanted extends JavaPlugin {
     }
     @Override
     public void onDisable() {
-        saveConfig();
+        configManager.saveConfig();
         database.saveCacheToDatabase();
         database.disconnect();
     }
 
 
     private void setupDatabase() {
-        String databaseType = ConfigManager.getConfig().getString("database.type", "sqlite").toLowerCase();
+        String databaseType = configManager.getConfig().getString("database.type", "sqlite").toLowerCase();
 
         switch (databaseType) {
             case "mysql":
@@ -106,6 +106,23 @@ public final class EnchantedWanted extends JavaPlugin {
             command.setPermission(Permission.ADMIN.toString());
         } else {
             logger.warning("[Command] Command '" + "wanteds" + "' not found in plugin.yml!");
+        }
+    }
+    private void loadConfigDefaults() {
+        FileConfiguration config = configManager.getConfig();
+
+        if (config == null) {
+            plugin.getLogger().warning("Configuration is not loaded. Aborting copying defaults.");
+            return;
+        }
+
+        config.options().copyDefaults(true);
+
+        try {
+            configManager.saveConfig();
+            plugin.getLogger().info("Default configuration values have been copied and saved successfully.");
+        } catch (Exception e) {
+            plugin.getLogger().log(Level.SEVERE, "Error saving config with defaults", e);
         }
     }
 }
