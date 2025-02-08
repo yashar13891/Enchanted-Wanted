@@ -131,7 +131,7 @@ public class MySQLManager implements DatabaseManager {
 
         int finalLevel = level;
         CompletableFuture.runAsync(() -> {
-            String sql = "INSERT INTO finalLevel (uuid, name, finalLevel) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE wanted = ?";
+            String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE wanted = VALUES(wanted);";
             String name = Bukkit.getOfflinePlayer(uuid).getName();
             if (name == null) name = "Unknown";
 
