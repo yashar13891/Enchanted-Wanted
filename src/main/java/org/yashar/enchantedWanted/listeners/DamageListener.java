@@ -27,19 +27,18 @@ public class DamageListener implements Listener {
         ItemStack totem = new ItemStack(Material.TOTEM_OF_UNDYING);
 
         if (e.isCancelled() || !(e.getEntity() instanceof Player victim) ||
-                victim.getInventory().getItemInMainHand().equals(totem) ||
-                victim.getInventory().getItemInOffHand().equals(totem)) {
+                victim.getKiller() == null ||
+                victim.getInventory().getItemInOffHand().equals(totem) ||
+                victim.getInventory().getItemInMainHand().equals(totem)) {
 
             broadcastMessage(ChatColor.RED + "Return Shod Chon Rquerment Nadasht !!!");
 
             return;
         }
 
+        broadcastMessage(String.valueOf(victim.getLastDamageCause()));
+
         if (victim.getHealth() - e.getFinalDamage() <= 0) {
-            if (victim.getKiller() == null) {
-                broadcastMessage(ChatColor.RED + "Return Shod Killer Pida Nashod !!!");
-                return;
-            }
 
             Player killer = victim.getKiller();
 
@@ -47,7 +46,5 @@ public class DamageListener implements Listener {
             sendMessage(killer, "<#ff5733>Hey!, Kiri Wanted Gerfti Va Alan %Wanted% Dari</#ff5733>".replace("%Wanted%",String.valueOf(database.getWanted(killer.getUniqueId()))));
             sendMessage(victim,"<#ff5733>Salam Ye Koni Toro Kosht Mikhai Azsh Shekait Kni ???</#ff5733>");
         }
-
-        broadcastMessage(ChatColor.RED + "Dmg Listener Ended !!!");
     }
 }
