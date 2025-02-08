@@ -1,15 +1,15 @@
 package org.yashar.enchantedWanted.listeners;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.yashar.enchantedWanted.storages.DatabaseManager;
+
+import java.util.Objects;
 
 import static org.bukkit.Bukkit.broadcastMessage;
 import static org.yashar.enchantedWanted.utils.MessageUtils.sendMessage;
@@ -28,24 +28,17 @@ public class DamageListener implements Listener {
         ItemStack totem = new ItemStack(Material.TOTEM_OF_UNDYING);
 
         if (e.isCancelled() || !(e.getEntity() instanceof Player victim) ||
-                victim.getKiller() == null ||
                 victim.getInventory().getItemInOffHand().equals(totem) ||
                 victim.getInventory().getItemInMainHand().equals(totem)) {
-
-
-            //Debuger
-            EntityDamageEvent damageCause = e.getEntity().getLastDamageCause();
-            broadcastMessage(String.valueOf(damageCause.getCause()));
-
-            EntityDamageByEntityEvent entityDamageCause = (EntityDamageByEntityEvent) damageCause;
-            broadcastMessage(entityDamageCause.getDamager().getType().toString());
-            broadcastMessage(entityDamageCause.getDamager().getName());
-            broadcastMessage(ChatColor.RED + "Return Shod Chon Rquerment Nadasht !!!");
 
             return;
         }
 
         if (victim.getHealth() - e.getFinalDamage() <= 0) {
+
+            if (Objects.requireNonNull(victim.getLastDamageCause()).getCause() != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+                return;
+            }
 
             Player killer = victim.getKiller();
 
