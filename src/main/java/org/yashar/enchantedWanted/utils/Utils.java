@@ -19,12 +19,6 @@ public class Utils {
     }
 
     public static void startGPS(UUID uuid) {
-        GPSAPI gpsapi = new GPSAPI(EnchantedWanted.getInstance());
-        Player player = Bukkit.getPlayer(uuid);
-        if (player != null) {
-            gpsapi.addPoint("wantedplayer", player.getLocation());
-            gpsapi.startGPS(player, "wantedplayer");
-        }
     }
 
     public static void unCuff(UUID uuid) {
