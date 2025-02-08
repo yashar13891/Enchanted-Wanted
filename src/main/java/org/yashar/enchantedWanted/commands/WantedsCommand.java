@@ -58,7 +58,7 @@ public class WantedsCommand implements TabExecutor {
         Player target = getTargetPlayer(player, args[1]);
         if (target == null) return;
         if (database.getWanted(target.getUniqueId()) == 0) {
-            player.sendMessage(ChatColor.YELLOW + target.getName() + "'s has no wanted");
+            player.sendMessage(ChatColor.YELLOW + target.getName() + "dossen't have wanted!");
         } else if (database.getWanted(target.getUniqueId()) > 0) {
             database.setWanted(target.getUniqueId(), 0);
             player.sendMessage(ChatColor.YELLOW + "Cleared " + ChatColor.GOLD + target.getName() + ChatColor.YELLOW + "'s wanted points!");

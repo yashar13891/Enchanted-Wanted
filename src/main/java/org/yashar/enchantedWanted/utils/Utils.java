@@ -1,11 +1,9 @@
 package org.yashar.enchantedWanted.utils;
 
-import com.live.bemmamin.gps.api.GPSAPI;
 import me.ford.cuffem.CuffEmPlugin;
 import me.ford.cuffem.Dragger;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.yashar.enchantedWanted.EnchantedWanted;
 import org.yashar.enchantedWanted.storages.DatabaseManager;
 
 import java.util.Objects;
