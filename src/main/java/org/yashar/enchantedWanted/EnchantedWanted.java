@@ -47,10 +47,6 @@ public final class EnchantedWanted extends JavaPlugin {
         logger.info("Enchanted Wanted Enabled! Thanks For Using (:");
     }
     @Override
-    public void onLoad() {
-        WGWantedFlag.registerFlags(getLogger());
-    }
-    @Override
     public void onDisable() {
         configManager.saveConfig();
         database.saveCacheToDatabase();
