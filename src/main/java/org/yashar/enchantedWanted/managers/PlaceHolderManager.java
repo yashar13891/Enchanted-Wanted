@@ -1,6 +1,7 @@
 package org.yashar.enchantedWanted.managers;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,7 +39,10 @@ public class PlaceHolderManager extends PlaceholderExpansion {
     public @Nullable String onPlaceholderRequest(Player player, @NotNull String identifier) {
         if (player == null) return null;
 
-        int wantedLevel = Math.max(database.getWanted(player.getUniqueId()), 0);
+        Bukkit.getLogger().info("Requested Placeholder: " + identifier);
+
+        int wantedLevel = database.getWanted(player.getUniqueId());
+        Bukkit.getLogger().info("Player: " + player.getName() + ", Wanted Level: " + wantedLevel);
 
         return switch (identifier) {
             case "ew_wanted" -> String.valueOf(wantedLevel);
@@ -46,4 +50,5 @@ public class PlaceHolderManager extends PlaceholderExpansion {
             default -> null;
         };
     }
+
 }
