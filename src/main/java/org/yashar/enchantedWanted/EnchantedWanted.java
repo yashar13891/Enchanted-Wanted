@@ -55,6 +55,7 @@ public final class EnchantedWanted extends JavaPlugin {
         database.saveCacheToDatabase();
     }
 
+
     private void setupDatabase() {
         String databaseType = ConfigManager.getConfig().getString("database.type", "sqlite").toLowerCase();
 

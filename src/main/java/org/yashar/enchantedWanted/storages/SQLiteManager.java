@@ -120,6 +120,7 @@ public class SQLiteManager implements DatabaseManager {
             logger.severe("[Database] Error setting wanted level: " + e.getMessage());
         }
     }
+
     public void saveCacheToDatabase() {
         logger.info("[Database] Saving cached wanted levels to database...");
 
