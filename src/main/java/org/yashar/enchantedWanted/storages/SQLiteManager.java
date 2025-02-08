@@ -46,6 +46,10 @@ public class SQLiteManager implements DatabaseManager {
 
     @Override
     public int getWanted(UUID uuid) {
+        if (playerExists(uuid)) {
+            insertPlayer(uuid, 0);
+        }
+
         String sql = "SELECT wanted FROM players WHERE uuid = ?;";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, uuid.toString());
@@ -68,42 +72,86 @@ public class SQLiteManager implements DatabaseManager {
         }
     }
 
+    @Override
     public void addWanted(UUID uuid, int amount) {
         if (amount < 1) return;
 
-        String sql = "UPDATE players SET wanted = wanted + ? WHERE uuid = ?;";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, amount);
-            stmt.setString(2, uuid.toString());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            logger.severe("[DataBase] Error increasing wanted level: " + e.getMessage());
+        if (playerExists(uuid)) {
+            insertPlayer(uuid, amount);
+        } else {
+            String sql = "UPDATE players SET wanted = wanted + ? WHERE uuid = ?;";
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setInt(1, amount);
+                stmt.setString(2, uuid.toString());
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                logger.severe("[DataBase] Error increasing wanted level: " + e.getMessage());
+            }
         }
     }
 
+    @Override
     public void removeWanted(UUID uuid, int amount) {
         if (amount < 1) return;
 
-        String sql = "UPDATE players SET wanted = ? WHERE uuid = ?;";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, amount);
-            stmt.setString(2, uuid.toString());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            logger.severe("[DataBase] Error decreasing wanted level: " + e.getMessage());
+        if (playerExists(uuid)) {
+            insertPlayer(uuid, 0);
+        } else {
+            int currentWanted = getWanted(uuid);
+            int newWanted = Math.max(0, currentWanted - amount);
+
+            String sql = "UPDATE players SET wanted = ? WHERE uuid = ?;";
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setInt(1, newWanted);
+                stmt.setString(2, uuid.toString());
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                logger.severe("[DataBase] Error decreasing wanted level: " + e.getMessage());
+            }
         }
     }
 
+    @Override
     public void setWanted(UUID uuid, int level) {
         if (level < 0) level = 0;
 
-        String sql = "UPDATE players SET wanted = ? WHERE uuid = ?;";
+        if (playerExists(uuid)) {
+            insertPlayer(uuid, level);
+        } else {
+            String sql = "UPDATE players SET wanted = ? WHERE uuid = ?;";
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setInt(1, level);
+                stmt.setString(2, uuid.toString());
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                logger.severe("[DataBase] Error setting wanted level: " + e.getMessage());
+            }
+        }
+    }
+
+    private boolean playerExists(UUID uuid) {
+        String sql = "SELECT COUNT(*) FROM players WHERE uuid = ?;";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, level);
-            stmt.setString(2, uuid.toString());
-            stmt.executeUpdate();
+            stmt.setString(1, uuid.toString());
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) <= 0;
+            }
         } catch (SQLException e) {
-            logger.severe("[DataBase] Error setting wanted level: " + e.getMessage());
+            logger.severe("[DataBase] Error checking player existence: " + e.getMessage());
+        }
+        return true;
+    }
+
+    private void insertPlayer(UUID uuid, int wanted) {
+        String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, ?);";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, uuid.toString());
+            stmt.setInt(3, wanted);
+            stmt.executeUpdate();
+            logger.info("[DataBase] New player added: " + uuid);
+        } catch (SQLException e) {
+            logger.severe("[DataBase] Error inserting new player: " + e.getMessage());
         }
     }
 }

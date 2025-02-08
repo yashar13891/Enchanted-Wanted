@@ -2,6 +2,7 @@ package org.yashar.enchantedWanted.utils;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Player;
 
 public class MessageUtils {
@@ -9,7 +10,8 @@ public class MessageUtils {
 
     public static void sendMessage(Player player, String message) {
         Component component = miniMessage.deserialize(message);
-        player.sendMessage(String.valueOf(component));
+        String legacyMessage = LegacyComponentSerializer.legacySection().serialize(component);
+        player.sendMessage(legacyMessage);
     }
 }
 

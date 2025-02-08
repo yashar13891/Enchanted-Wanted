@@ -39,8 +39,8 @@ public class DamageListener implements Listener {
             Player killer = victim.getKiller();
 
             database.addWanted(killer.getUniqueId(),1);
-            sendMessage(killer, "&cHey!, &7Kiri Wanted Gerfti Va Alan &e%Wanted%&7 Dari".replace("%Wanted%",String.valueOf(database.getWanted(killer.getUniqueId()))));
-            sendMessage(victim,"Salam Ye Koni Toro Kosht Mikhai Azsh Shekait Kni ???");
+            sendMessage(killer, "<#ff5733>Hey!, Kiri Wanted Gerfti Va Alan %Wanted% Dari</#ff5733>".replace("%Wanted%",String.valueOf(database.getWanted(killer.getUniqueId()))));
+            sendMessage(victim,"<#ff5733>Salam Ye Koni Toro Kosht Mikhai Azsh Shekait Kni ???</#ff5733>");
         }
     }
 }

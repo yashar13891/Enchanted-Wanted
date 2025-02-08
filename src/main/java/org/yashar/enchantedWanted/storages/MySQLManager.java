@@ -3,7 +3,6 @@ package org.yashar.enchantedWanted.storages;
 import java.sql.*;
 import java.util.UUID;
 import java.util.logging.Logger;
-
 import org.yashar.enchantedWanted.EnchantedWanted;
 
 public class MySQLManager implements DatabaseManager {
@@ -72,53 +71,68 @@ public class MySQLManager implements DatabaseManager {
     }
 
     public void addWanted(UUID uuid, int amount) {
-        if (isConnected()) {
+        if (!isConnected()) {
             logger.severe("[DataBase] Connection is null, cannot update wanted level.");
             return;
         }
         if (amount < 1) return;
 
-        String sql = "UPDATE players SET wanted = wanted + ? WHERE uuid = ?;";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, amount);
-            stmt.setString(2, uuid.toString());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            logger.severe("[DataBase] Error increasing wanted level: " + e.getMessage());
+        if (playerExists(uuid)) {
+            insertPlayer(uuid, amount);
+        } else {
+            String sql = "UPDATE players SET wanted = wanted + ? WHERE uuid = ?;";
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setInt(1, amount);
+                stmt.setString(2, uuid.toString());
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                logger.severe("[DataBase] Error increasing wanted level: " + e.getMessage());
+            }
         }
     }
 
     public void removeWanted(UUID uuid, int amount) {
-        if (isConnected()) {
+        if (!isConnected()) {
             logger.severe("[DataBase] Connection is null, cannot update wanted level.");
             return;
         }
         if (amount < 1) return;
 
-        String sql = "UPDATE players SET wanted = ? WHERE uuid = ?;";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, amount);
-            stmt.setString(2, uuid.toString());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            logger.severe("[DataBase] Error decreasing wanted level: " + e.getMessage());
+        if (playerExists(uuid)) {
+            insertPlayer(uuid, 0);
+        } else {
+            int currentWanted = getWanted(uuid);
+            int newWanted = Math.max(0, currentWanted - amount);
+
+            String sql = "UPDATE players SET wanted = ? WHERE uuid = ?;";
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setInt(1, newWanted);
+                stmt.setString(2, uuid.toString());
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                logger.severe("[DataBase] Error decreasing wanted level: " + e.getMessage());
+            }
         }
     }
 
     public void setWanted(UUID uuid, int level) {
-        if (isConnected()) {
+        if (!isConnected()) {
             logger.severe("[DataBase] Connection is null, cannot update wanted level.");
             return;
         }
         if (level < 0) level = 0;
 
-        String sql = "UPDATE players SET wanted = ? WHERE uuid = ?;";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, level);
-            stmt.setString(2, uuid.toString());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            logger.severe("[DataBase] Error setting wanted level: " + e.getMessage());
+        if (playerExists(uuid)) {
+            insertPlayer(uuid, level);
+        } else {
+            String sql = "UPDATE players SET wanted = ? WHERE uuid = ?;";
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setInt(1, level);
+                stmt.setString(2, uuid.toString());
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                logger.severe("[DataBase] Error setting wanted level: " + e.getMessage());
+            }
         }
     }
 
@@ -127,6 +141,10 @@ public class MySQLManager implements DatabaseManager {
         if (!isConnected()) {
             logger.severe("[DataBase] Connection is null, cannot retrieve wanted level.");
             return 0;
+        }
+
+        if (playerExists(uuid)) {
+            insertPlayer(uuid, 0);
         }
 
         String sql = "SELECT wanted FROM players WHERE uuid = ?;";
@@ -142,5 +160,31 @@ public class MySQLManager implements DatabaseManager {
         }
         return 0;
     }
-}
 
+    private boolean playerExists(UUID uuid) {
+        String sql = "SELECT COUNT(*) FROM players WHERE uuid = ?;";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, uuid.toString());
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) <= 0;
+            }
+        } catch (SQLException e) {
+            logger.severe("[DataBase] Error checking player existence: " + e.getMessage());
+        }
+        return true;
+    }
+
+    private void insertPlayer(UUID uuid, int wanted) {
+        String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, ?);";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, uuid.toString());
+            stmt.setString(2, "Unknown"); // در صورت نیاز اینجا می‌توان نام پلیر را از Bukkit دریافت کرد
+            stmt.setInt(3, wanted);
+            stmt.executeUpdate();
+            logger.info("[DataBase] New player added: " + uuid);
+        } catch (SQLException e) {
+            logger.severe("[DataBase] Error inserting new player: " + e.getMessage());
+        }
+    }
+}
