@@ -3,9 +3,7 @@ package org.yashar.enchantedWanted.storages;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.yashar.enchantedWanted.EnchantedWanted;
-import org.yashar.enchantedWanted.utils.*;
 
 import java.sql.*;
 import java.util.UUID;
@@ -104,10 +102,6 @@ public class MySQLManager implements DatabaseManager {
     public void addWanted(UUID uuid, int amount) {
         if (amount < 1) return;
 
-        Player player = Bukkit.getPlayer(uuid);
-        if (!WorldGuardUtils.isWantedAllowed(player)) {
-            return;
-        }
 
         setWanted(uuid, getWanted(uuid) + amount);
     }
@@ -122,10 +116,6 @@ public class MySQLManager implements DatabaseManager {
     public void setWanted(UUID uuid, int level) {
         if (level < 0) level = 0;
 
-        Player player = Bukkit.getPlayer(uuid);
-        if (!WorldGuardUtils.isWantedAllowed(player)) {
-            return;
-        }
 
         wantedCache.put(uuid, level);
 

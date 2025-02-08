@@ -37,9 +37,8 @@ public final class EnchantedWanted extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         logger = getLogger();
-        loadConfigDefaults();
         BStatsManager.setup(this);
-
+        configManager.loadConfigFile();
         setupDatabase();
         registerCommands();
         checkDependencies();
