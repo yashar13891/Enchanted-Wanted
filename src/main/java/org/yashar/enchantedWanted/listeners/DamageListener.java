@@ -31,6 +31,8 @@ public class DamageListener implements Listener {
                 victim.getInventory().getItemInOffHand().equals(totem) ||
                 victim.getInventory().getItemInMainHand().equals(totem)) {
 
+            broadcastMessage(String.valueOf(e.getEntity().getLastDamageCause()));
+            broadcastMessage(String.valueOf(e.getEntity().getLastDamageCause().getCause()));
             broadcastMessage(ChatColor.RED + "Return Shod Chon Rquerment Nadasht !!!");
 
             return;
