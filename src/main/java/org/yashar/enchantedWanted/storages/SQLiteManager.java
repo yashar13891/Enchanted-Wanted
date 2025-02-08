@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.UUID;
 import java.util.logging.Logger;
 import org.yashar.enchantedWanted.EnchantedWanted;
+import org.bukkit.Bukkit;
 
 public class SQLiteManager implements DatabaseManager {
 
@@ -25,11 +26,10 @@ public class SQLiteManager implements DatabaseManager {
         if (connection == null) return;
         try {
             connection.close();
+            connection = null;
             logger.info("[DataBase] SQLite Disconnected!");
         } catch (SQLException e) {
             logger.warning("[DataBase] Error closing SQLite connection: " + e.getMessage());
-        } finally {
-            connection = null;
         }
     }
 
@@ -46,7 +46,7 @@ public class SQLiteManager implements DatabaseManager {
 
     @Override
     public int getWanted(UUID uuid) {
-        if (playerExists(uuid)) {
+        if (!playerExists(uuid)) {
             insertPlayer(uuid, 0);
         }
 
@@ -76,7 +76,7 @@ public class SQLiteManager implements DatabaseManager {
     public void addWanted(UUID uuid, int amount) {
         if (amount < 1) return;
 
-        if (playerExists(uuid)) {
+        if (!playerExists(uuid)) {
             insertPlayer(uuid, amount);
         } else {
             String sql = "UPDATE players SET wanted = wanted + ? WHERE uuid = ?;";
@@ -94,7 +94,7 @@ public class SQLiteManager implements DatabaseManager {
     public void removeWanted(UUID uuid, int amount) {
         if (amount < 1) return;
 
-        if (playerExists(uuid)) {
+        if (!playerExists(uuid)) {
             insertPlayer(uuid, 0);
         } else {
             int currentWanted = getWanted(uuid);
@@ -115,7 +115,7 @@ public class SQLiteManager implements DatabaseManager {
     public void setWanted(UUID uuid, int level) {
         if (level < 0) level = 0;
 
-        if (playerExists(uuid)) {
+        if (!playerExists(uuid)) {
             insertPlayer(uuid, level);
         } else {
             String sql = "UPDATE players SET wanted = ? WHERE uuid = ?;";
@@ -133,23 +133,28 @@ public class SQLiteManager implements DatabaseManager {
         String sql = "SELECT COUNT(*) FROM players WHERE uuid = ?;";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, uuid.toString());
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) <= 0;
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
             }
         } catch (SQLException e) {
-            logger.severe("[DataBase] Error checking player existence: " + e.getMessage());
+            logger.severe("[Database] Error checking player existence: " + e.getMessage());
         }
-        return true;
+        return false;
     }
 
     private void insertPlayer(UUID uuid, int wanted) {
+        String name = Bukkit.getOfflinePlayer(uuid).getName();
+        if (name == null) name = "Unknown";
+
         String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, ?);";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, uuid.toString());
+            stmt.setString(2, name);
             stmt.setInt(3, wanted);
             stmt.executeUpdate();
-            logger.info("[DataBase] New player added: " + uuid);
+            logger.info("[DataBase] New player added: " + uuid + " (" + name + ")");
         } catch (SQLException e) {
             logger.severe("[DataBase] Error inserting new player: " + e.getMessage());
         }

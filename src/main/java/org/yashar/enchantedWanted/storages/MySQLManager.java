@@ -23,11 +23,11 @@ public class MySQLManager implements DatabaseManager {
             String url = String.format("jdbc:mysql://%s:%d/%s?useSSL=true&requireSSL=false&autoReconnect=true", host, port, database);
 
             connection = DriverManager.getConnection(url, username, password);
-            logger.info("[DataBase] MySQL Connected!");
+            logger.info("[Database] MySQL Connected!");
         } catch (ClassNotFoundException e) {
-            logger.severe("[DataBase] MySQL Driver not found: " + e.getMessage());
+            logger.severe("[Database] MySQL Driver not found: " + e.getMessage());
         } catch (SQLException e) {
-            logger.severe("[DataBase] MySQL Connection Failed: " + e.getMessage());
+            logger.severe("[Database] MySQL Connection Failed: " + e.getMessage());
         }
     }
 
@@ -37,9 +37,9 @@ public class MySQLManager implements DatabaseManager {
 
         try {
             connection.close();
-            logger.info("[DataBase] MySQL Disconnected!");
+            logger.info("[Database] MySQL Disconnected!");
         } catch (SQLException e) {
-            logger.warning("[DataBase] Error closing MySQL connection: " + e.getMessage());
+            logger.warning("[Database] Error closing MySQL connection: " + e.getMessage());
         } finally {
             connection = null;
         }
@@ -64,20 +64,20 @@ public class MySQLManager implements DatabaseManager {
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.execute();
-            logger.info("[DataBase] Table 'players' checked/created successfully.");
+            logger.info("[Database] Table 'players' checked/created successfully.");
         } catch (SQLException e) {
-            logger.severe("[DataBase] Error creating table: " + e.getMessage());
+            logger.severe("[Database] Error creating table: " + e.getMessage());
         }
     }
 
     public void addWanted(UUID uuid, int amount) {
         if (!isConnected()) {
-            logger.severe("[DataBase] Connection is null, cannot update wanted level.");
+            logger.severe("[Database] Connection is null, cannot update wanted level.");
             return;
         }
         if (amount < 1) return;
 
-        if (playerExists(uuid)) {
+        if (!playerExists(uuid)) {
             insertPlayer(uuid, amount);
         } else {
             String sql = "UPDATE players SET wanted = wanted + ? WHERE uuid = ?;";
@@ -86,21 +86,19 @@ public class MySQLManager implements DatabaseManager {
                 stmt.setString(2, uuid.toString());
                 stmt.executeUpdate();
             } catch (SQLException e) {
-                logger.severe("[DataBase] Error increasing wanted level: " + e.getMessage());
+                logger.severe("[Database] Error increasing wanted level: " + e.getMessage());
             }
         }
     }
 
     public void removeWanted(UUID uuid, int amount) {
         if (!isConnected()) {
-            logger.severe("[DataBase] Connection is null, cannot update wanted level.");
+            logger.severe("[Database] Connection is null, cannot update wanted level.");
             return;
         }
         if (amount < 1) return;
 
         if (playerExists(uuid)) {
-            insertPlayer(uuid, 0);
-        } else {
             int currentWanted = getWanted(uuid);
             int newWanted = Math.max(0, currentWanted - amount);
 
@@ -110,19 +108,19 @@ public class MySQLManager implements DatabaseManager {
                 stmt.setString(2, uuid.toString());
                 stmt.executeUpdate();
             } catch (SQLException e) {
-                logger.severe("[DataBase] Error decreasing wanted level: " + e.getMessage());
+                logger.severe("[Database] Error decreasing wanted level: " + e.getMessage());
             }
         }
     }
 
     public void setWanted(UUID uuid, int level) {
         if (!isConnected()) {
-            logger.severe("[DataBase] Connection is null, cannot update wanted level.");
+            logger.severe("[Database] Connection is null, cannot update wanted level.");
             return;
         }
         if (level < 0) level = 0;
 
-        if (playerExists(uuid)) {
+        if (!playerExists(uuid)) {
             insertPlayer(uuid, level);
         } else {
             String sql = "UPDATE players SET wanted = ? WHERE uuid = ?;";
@@ -131,7 +129,7 @@ public class MySQLManager implements DatabaseManager {
                 stmt.setString(2, uuid.toString());
                 stmt.executeUpdate();
             } catch (SQLException e) {
-                logger.severe("[DataBase] Error setting wanted level: " + e.getMessage());
+                logger.severe("[Database] Error setting wanted level: " + e.getMessage());
             }
         }
     }
@@ -139,24 +137,24 @@ public class MySQLManager implements DatabaseManager {
     @Override
     public int getWanted(UUID uuid) {
         if (!isConnected()) {
-            logger.severe("[DataBase] Connection is null, cannot retrieve wanted level.");
+            logger.severe("[Database] Connection is null, cannot retrieve wanted level.");
             return 0;
         }
 
-        if (playerExists(uuid)) {
-            insertPlayer(uuid, 0);
+        if (!playerExists(uuid)) {
+            return 0;
         }
 
         String sql = "SELECT wanted FROM players WHERE uuid = ?;";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, String.valueOf(uuid));
+            stmt.setString(1, uuid.toString());
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt("wanted");
                 }
             }
         } catch (SQLException e) {
-            logger.severe("[DataBase] Error retrieving wanted level for UUID " + uuid + ": " + e.getMessage());
+            logger.severe("[Database] Error retrieving wanted level for UUID " + uuid + ": " + e.getMessage());
         }
         return 0;
     }
@@ -165,26 +163,27 @@ public class MySQLManager implements DatabaseManager {
         String sql = "SELECT COUNT(*) FROM players WHERE uuid = ?;";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, uuid.toString());
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) <= 0;
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
             }
         } catch (SQLException e) {
-            logger.severe("[DataBase] Error checking player existence: " + e.getMessage());
+            logger.severe("[Database] Error checking player existence: " + e.getMessage());
         }
-        return true;
+        return false;
     }
 
     private void insertPlayer(UUID uuid, int wanted) {
         String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, ?);";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, uuid.toString());
-            stmt.setString(2, "Unknown"); // در صورت نیاز اینجا می‌توان نام پلیر را از Bukkit دریافت کرد
+            stmt.setString(2, "Unknown");
             stmt.setInt(3, wanted);
             stmt.executeUpdate();
-            logger.info("[DataBase] New player added: " + uuid);
+            logger.info("[Database] New player added: " + uuid);
         } catch (SQLException e) {
-            logger.severe("[DataBase] Error inserting new player: " + e.getMessage());
+            logger.severe("[Database] Error inserting new player: " + e.getMessage());
         }
     }
 }

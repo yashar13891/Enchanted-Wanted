@@ -92,6 +92,7 @@ public final class EnchantedWanted extends JavaPlugin {
         WantedGUI wantedGUI = new WantedGUI(database);
         getPluginManager().registerEvents(new DamageListener(database), this);
         getPluginManager().registerEvents(wantedGUI, this);
+        new PlaceHolderManager(database).register();
     }
 
     private void registerCommand(CommandExecutor executor) {

@@ -3,13 +3,14 @@ package org.yashar.enchantedWanted.managers;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.yashar.enchantedWanted.storages.DatabaseManager;
 
 public class PlaceHolderManager extends PlaceholderExpansion {
 
     private final DatabaseManager database;
 
-    public PlaceHolderManager(DatabaseManager database) {
+    public PlaceHolderManager(@NotNull DatabaseManager database) {
         this.database = database;
     }
 
@@ -29,18 +30,20 @@ public class PlaceHolderManager extends PlaceholderExpansion {
     }
 
     @Override
-    public String onPlaceholderRequest(Player player, String identifier) {
-        switch (identifier) {
-            case "%ew_wanted%":
-                return String.valueOf(database.getWanted(player.getUniqueId()));
-            case "%ew_formatted_wanted%":
-                if (player == null) return "";
+    public boolean canRegister() {
+        return true;
+    }
 
-                int wantedLevel = database.getWanted(player.getUniqueId());
-                wantedLevel = Math.max(wantedLevel, 0);
-                return "★".repeat(wantedLevel);
-        }
+    @Override
+    public @Nullable String onPlaceholderRequest(Player player, @NotNull String identifier) {
+        if (player == null) return null;
 
-        return null;
+        int wantedLevel = Math.max(database.getWanted(player.getUniqueId()), 0);
+
+        return switch (identifier) {
+            case "ew_wanted" -> String.valueOf(wantedLevel);
+            case "ew_formatted_wanted" -> "★".repeat(wantedLevel) + "✩".repeat(6 - wantedLevel);
+            default -> null;
+        };
     }
 }
