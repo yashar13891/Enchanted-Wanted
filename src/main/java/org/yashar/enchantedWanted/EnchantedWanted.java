@@ -52,8 +52,8 @@ public final class EnchantedWanted extends JavaPlugin {
             getLogger().severe("[Database] Database Disconnected!");
         }
         saveConfig();
+        database.saveCacheToDatabase();
     }
-
 
     private void setupDatabase() {
         String databaseType = ConfigManager.getConfig().getString("database.type", "sqlite").toLowerCase();

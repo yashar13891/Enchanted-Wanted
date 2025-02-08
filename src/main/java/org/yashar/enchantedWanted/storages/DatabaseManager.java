@@ -18,5 +18,7 @@ public interface DatabaseManager {
     void removeWanted(UUID uuid, int amount);
 
     void setWanted(UUID uuid, int level);
+
+    void saveCacheToDatabase();
 }
 
