@@ -5,6 +5,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import org.yashar.enchantedWanted.commands.*;
+import org.yashar.enchantedWanted.flags.*;
 import org.yashar.enchantedWanted.listeners.*;
 import org.yashar.enchantedWanted.managers.*;
 import org.yashar.enchantedWanted.menus.*;
@@ -44,7 +45,10 @@ public final class EnchantedWanted extends JavaPlugin {
 
         logger.info("Enchanted Wanted Enabled! Thanks For Using (:");
     }
-
+    @Override
+    public void onLoad() {
+        WGWantedFlag.registerFlags(getLogger());
+    }
     @Override
     public void onDisable() {
         if (database != null) {
