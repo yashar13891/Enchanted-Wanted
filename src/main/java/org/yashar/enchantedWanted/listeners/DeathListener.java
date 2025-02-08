@@ -2,12 +2,13 @@ package org.yashar.enchantedWanted.listeners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.yashar.enchantedWanted.EnchantedWanted;
+import org.yashar.enchantedWanted.managers.ConfigManager;
 import org.yashar.enchantedWanted.storages.DatabaseManager;
 
 import java.util.List;
@@ -17,11 +18,10 @@ import static org.yashar.enchantedWanted.utils.MessageUtils.sendMessage;
 public class DeathListener implements Listener {
 
     private final DatabaseManager database;
-    private final FileConfiguration config;
+    ConfigManager configManager = new ConfigManager(EnchantedWanted.getInstance());
 
-    public DeathListener(DatabaseManager database, FileConfiguration config) {
+    public DeathListener(DatabaseManager database) {
         this.database = database;
-        this.config = config;
     }
 
     @EventHandler
@@ -54,7 +54,7 @@ public class DeathListener implements Listener {
     }
 
     private void executeKillCommands(Player killer) {
-        List<String> commands = config.getStringList("kill-commands");
+        List<String> commands = configManager.getConfig().getStringList("kill-commands");
         for (String command : commands) {
             if (command.startsWith("[PLAYER]")) {
                 String playerCommand = command.replace("[PLAYER] ", "");
