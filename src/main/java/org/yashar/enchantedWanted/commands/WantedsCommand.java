@@ -52,7 +52,7 @@ public class WantedsCommand implements TabExecutor {
 
     private void handleTop(Player player) {
         // Implementation for top wanted players
-        WantedGUI.openWantedMenu(player);
+        WantedGUI.openWantedMenu(player, 0);
     }
 
     private void handleClear(Player player, String[] args) {
