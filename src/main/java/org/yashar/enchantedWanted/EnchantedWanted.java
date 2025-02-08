@@ -51,12 +51,9 @@ public final class EnchantedWanted extends JavaPlugin {
     }
     @Override
     public void onDisable() {
-        if (database != null) {
-            database.disconnect();
-            getLogger().severe("[Database] Database Disconnected!");
-        }
         saveConfig();
         database.saveCacheToDatabase();
+        database.disconnect();
     }
 
 
