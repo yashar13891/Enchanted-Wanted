@@ -3,7 +3,10 @@ package org.yashar.enchantedWanted.storages;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.yashar.enchantedWanted.EnchantedWanted;
+import org.yashar.enchantedWanted.utils.*;
+
 import java.sql.*;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -100,6 +103,12 @@ public class MySQLManager implements DatabaseManager {
     @Override
     public void addWanted(UUID uuid, int amount) {
         if (amount < 1) return;
+
+        Player player = Bukkit.getPlayer(uuid);
+        if (player != null && !WorldGuardUtils.isWantedAllowed(player)) {
+            return;
+        }
+
         setWanted(uuid, getWanted(uuid) + amount);
     }
 
@@ -112,11 +121,17 @@ public class MySQLManager implements DatabaseManager {
     @Override
     public void setWanted(UUID uuid, int level) {
         if (level < 0) level = 0;
+
+        Player player = Bukkit.getPlayer(uuid);
+        if (player != null && !WorldGuardUtils.isWantedAllowed(player)) {
+            return;
+        }
+
         wantedCache.put(uuid, level);
 
         int finalLevel = level;
         CompletableFuture.runAsync(() -> {
-            String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE wanted = ?;";
+            String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, ?) ON CONFLICT(uuid) DO UPDATE SET wanted = ?;";
             String name = Bukkit.getOfflinePlayer(uuid).getName();
             if (name == null) name = "Unknown";
 
@@ -124,6 +139,7 @@ public class MySQLManager implements DatabaseManager {
                 stmt.setString(1, uuid.toString());
                 stmt.setString(2, name);
                 stmt.setInt(3, finalLevel);
+                stmt.setInt(4, finalLevel);
                 stmt.executeUpdate();
             } catch (SQLException e) {
                 logger.severe("[Database] Error setting wanted level: " + e.getMessage());
