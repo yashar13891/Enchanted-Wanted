@@ -30,6 +30,9 @@ public class WorldGuardUtils {
             if (flagValue == StateFlag.State.DENY) {
                 return false;
             }
+            if (flagValue == StateFlag.State.ALLOW) {
+                return true;
+            }
         }
         return true;
     }
