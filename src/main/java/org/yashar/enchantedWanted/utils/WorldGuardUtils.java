@@ -18,16 +18,16 @@ public class WorldGuardUtils {
     }
 
     public static boolean isWantedAllowed(Player player) {
-        if (player == null) return true;
+        if (player == null) return false;
 
         Location loc = BukkitAdapter.adapt(player.getLocation());
         ApplicableRegionSet regions = getContainer().createQuery().getApplicableRegions(loc);
 
         for (ProtectedRegion region : regions) {
             if (region.getFlag(WGWantedFlag.WANTED_ALLOWED) == StateFlag.State.DENY) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 }

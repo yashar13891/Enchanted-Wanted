@@ -99,7 +99,7 @@ public class SQLiteManager implements DatabaseManager {
         if (amount < 1) return;
 
         Player player = Bukkit.getPlayer(uuid);
-        if (player != null && !WorldGuardUtils.isWantedAllowed(player)) {
+        if (player != null && WorldGuardUtils.isWantedAllowed(player)) {
             return;
         }
 
@@ -117,7 +117,7 @@ public class SQLiteManager implements DatabaseManager {
         if (level < 0) level = 0;
 
         Player player = Bukkit.getPlayer(uuid);
-        if (player != null && !WorldGuardUtils.isWantedAllowed(player)) {
+        if (player != null && WorldGuardUtils.isWantedAllowed(player)) {
             return;
         }
 
