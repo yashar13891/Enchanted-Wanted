@@ -141,31 +141,47 @@ public class SQLiteManager implements DatabaseManager {
             }
         });
     }
+    public void reconnectDatabase() {
+        disconnect();
+        connect();
+        logger.info("[Database] Reconnected successfully!");
+    }
 
     public void saveCacheToDatabase() {
-        logger.info("[Database] Saving cached wanted levels to database...");
+        logger.info("[Database] Saving cached wanted levels to database ...");
 
-        CompletableFuture.runAsync(() -> {
-            String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, ?) ON CONFLICT(uuid) DO UPDATE SET wanted = ?;";
-            try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
-                for (UUID uuid : wantedCache.asMap().keySet()) {
-                    int wantedLevel = wantedCache.getIfPresent(uuid);
-                    String name = Bukkit.getOfflinePlayer(uuid).getName();
-                    if (name == null) name = "Unknown";
-
-                    stmt.setString(1, uuid.toString());
-                    stmt.setString(2, name);
-                    stmt.setInt(3, wantedLevel);
-                    stmt.addBatch();
-                }
-                stmt.executeBatch();
-            } catch (SQLException e) {
-                logger.severe("[Database] Error in bulk update: " + e.getMessage());
+        if (!isConnected()) {
+            logger.severe("[Database] Connection lost! Trying to reconnect...");
+            reconnectDatabase();
+            if (!isConnected()) {
+                logger.severe("[Database] Reconnection failed! Cache not saved.");
+                return;
             }
+        }
 
-            wantedCache.invalidateAll();
-        });
+        String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, ?) ON CONFLICT(uuid) DO UPDATE SET wanted = ?;";
+        try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
+            for (UUID uuid : wantedCache.asMap().keySet()) {
+                Integer wantedLevel = wantedCache.getIfPresent(uuid);
+                if (wantedLevel == null) wantedLevel = 0;
+                String name = Bukkit.getOfflinePlayer(uuid).getName();
+                if (name == null) name = "Unknown";
+
+                stmt.setString(1, uuid.toString());
+                stmt.setString(2, name);
+                stmt.setInt(3, wantedLevel);
+                stmt.setInt(4, wantedLevel); // مقدار جدید برای UPDATE
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+            logger.info("[Database] Cache successfully saved to database.");
+        } catch (SQLException e) {
+            logger.severe("[Database] Error in bulk update: " + e.getMessage());
+        }
+
+        wantedCache.invalidateAll();
     }
+
 
 
 }
