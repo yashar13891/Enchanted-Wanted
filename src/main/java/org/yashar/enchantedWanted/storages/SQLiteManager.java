@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.yashar.enchantedWanted.EnchantedWanted;
 import java.sql.*;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -107,29 +108,47 @@ public class SQLiteManager implements DatabaseManager {
         if (level < 0) level = 0;
         wantedCache.put(uuid, level);
 
-        String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, ?) ON CONFLICT(uuid) DO UPDATE SET wanted = excluded.wanted;";
-        String name = Bukkit.getOfflinePlayer(uuid).getName();
-        if (name == null) name = "Unknown";
+        int finalLevel = level;
+        CompletableFuture.runAsync(() -> {
+            String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE wanted = VALUES(wanted);";
+            String name = Bukkit.getOfflinePlayer(uuid).getName();
+            if (name == null) name = "Unknown";
 
-        try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
-            stmt.setString(1, uuid.toString());
-            stmt.setString(2, name);
-            stmt.setInt(3, level);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            logger.severe("[Database] Error setting wanted level: " + e.getMessage());
-        }
+            try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
+                stmt.setString(1, uuid.toString());
+                stmt.setString(2, name);
+                stmt.setInt(3, finalLevel);
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                logger.severe("[Database] Error setting wanted level: " + e.getMessage());
+            }
+        });
     }
 
     public void saveCacheToDatabase() {
         logger.info("[Database] Saving cached wanted levels to database...");
 
-        for (UUID uuid : wantedCache.asMap().keySet()) {
-            int wantedLevel = wantedCache.getIfPresent(uuid);
-            setWanted(uuid, wantedLevel);
-        }
+        CompletableFuture.runAsync(() -> {
+            String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE wanted = VALUES(wanted);";
+            try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
+                for (UUID uuid : wantedCache.asMap().keySet()) {
+                    int wantedLevel = wantedCache.getIfPresent(uuid);
+                    String name = Bukkit.getOfflinePlayer(uuid).getName();
+                    if (name == null) name = "Unknown";
 
-        logger.info("[Database] All cached wanted levels have been saved!");
+                    stmt.setString(1, uuid.toString());
+                    stmt.setString(2, name);
+                    stmt.setInt(3, wantedLevel);
+                    stmt.addBatch();
+                }
+                stmt.executeBatch();
+            } catch (SQLException e) {
+                logger.severe("[Database] Error in bulk update: " + e.getMessage());
+            }
+
+            wantedCache.invalidateAll();
+        });
     }
+
 
 }
