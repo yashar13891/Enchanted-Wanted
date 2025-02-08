@@ -131,7 +131,7 @@ public class MySQLManager implements DatabaseManager {
 
         int finalLevel = level;
         CompletableFuture.runAsync(() -> {
-            String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE wanted = VALUES(wanted);";
+            String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE wanted = ?;";
             String name = Bukkit.getOfflinePlayer(uuid).getName();
             if (name == null) name = "Unknown";
 
@@ -163,7 +163,7 @@ public class MySQLManager implements DatabaseManager {
             }
         }
 
-        String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE wanted = VALUES(wanted);";
+        String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE wanted = ?;";
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             for (UUID uuid : wantedCache.asMap().keySet()) {
                 Integer wantedLevel = wantedCache.getIfPresent(uuid);
