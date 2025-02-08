@@ -170,7 +170,7 @@ public class SQLiteManager implements DatabaseManager {
                 stmt.setString(1, uuid.toString());
                 stmt.setString(2, name);
                 stmt.setInt(3, wantedLevel);
-                stmt.setInt(4, wantedLevel); // مقدار جدید برای UPDATE
+                stmt.setInt(4, wantedLevel);
                 stmt.addBatch();
             }
             stmt.executeBatch();
