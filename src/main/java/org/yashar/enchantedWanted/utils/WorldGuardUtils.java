@@ -7,7 +7,6 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
-
 import org.bukkit.entity.Player;
 import org.yashar.enchantedWanted.flags.WGWantedFlag;
 
@@ -23,7 +22,14 @@ public class WorldGuardUtils {
             return false;
         }
 
-        Location loc = BukkitAdapter.adapt(player.getLocation());
+        Location loc;
+        try {
+            loc = BukkitAdapter.adapt(player.getLocation());
+        } catch (Exception e) {
+            System.out.println("[DEBUG] Error adapting location: " + e.getMessage());
+            return false;
+        }
+
         System.out.println("[DEBUG] Checking wanted status for player: " + player.getName() + " at location: " + loc);
 
         RegionContainer container = getContainer();
@@ -33,7 +39,7 @@ public class WorldGuardUtils {
         }
 
         ApplicableRegionSet regions = container.createQuery().getApplicableRegions(loc);
-        if (regions == null) {
+        if (regions == null || regions.size() == 0) {
             System.out.println("[DEBUG] No regions found for location: " + loc);
             return false;
         }
@@ -43,6 +49,11 @@ public class WorldGuardUtils {
         for (ProtectedRegion region : regions) {
             StateFlag.State flagValue = region.getFlag(WGWantedFlag.WANTED_ALLOWED);
             System.out.println("[DEBUG] Region: " + region.getId() + ", WantedAllowed Flag: " + flagValue);
+
+            if (flagValue == null) {
+                System.out.println("[DEBUG] No explicit flag set for region: " + region.getId());
+                continue;
+            }
 
             if (flagValue == StateFlag.State.ALLOW) {
                 foundAllow = true;
@@ -55,5 +66,4 @@ public class WorldGuardUtils {
         System.out.println("[DEBUG] Wanted status result for " + player.getName() + ": " + foundAllow);
         return foundAllow;
     }
-
 }

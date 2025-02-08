@@ -38,6 +38,8 @@ public final class EnchantedWanted extends JavaPlugin {
         ConfigManager.init(this);
         ConfigManager.loadConfig();
 
+        BStatsManager.setup(this);
+
         setupDatabase();
         registerCommands();
         checkDependencies();
