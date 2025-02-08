@@ -31,16 +31,19 @@ public class DamageListener implements Listener {
                 victim.getInventory().getItemInOffHand().equals(totem) ||
                 victim.getInventory().getItemInMainHand().equals(totem)) {
 
+            broadcastMessage(String.valueOf(e.getEntity().getLastDamageCause()));
+            broadcastMessage(String.valueOf(e.getEntity().getLastDamageCause().getCause()));
             broadcastMessage(ChatColor.RED + "Return Shod Chon Rquerment Nadasht !!!");
 
             return;
         }
 
-        broadcastMessage(String.valueOf(victim.getLastDamageCause()));
-
         if (victim.getHealth() - e.getFinalDamage() <= 0) {
 
             Player killer = victim.getKiller();
+
+            broadcastMessage(String.valueOf(e.getEntity().getLastDamageCause()));
+            broadcastMessage(String.valueOf(e.getEntity().getLastDamageCause().getCause()));
 
             database.addWanted(killer.getUniqueId(),1);
             sendMessage(killer, "<#ff5733>Hey!, Kiri Wanted Gerfti Va Alan %Wanted% Dari</#ff5733>".replace("%Wanted%",String.valueOf(database.getWanted(killer.getUniqueId()))));
