@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.yashar.enchantedWanted.storages.DatabaseManager;
@@ -31,8 +32,14 @@ public class DamageListener implements Listener {
                 victim.getInventory().getItemInOffHand().equals(totem) ||
                 victim.getInventory().getItemInMainHand().equals(totem)) {
 
-            broadcastMessage(String.valueOf(e.getEntity().getLastDamageCause()));
-            broadcastMessage(String.valueOf(e.getEntity().getLastDamageCause().getCause()));
+
+            //Debuger
+            EntityDamageEvent damageCause = e.getEntity().getLastDamageCause();
+            broadcastMessage(String.valueOf(damageCause.getCause()));
+
+            EntityDamageByEntityEvent entityDamageCause = (EntityDamageByEntityEvent) damageCause;
+            broadcastMessage(entityDamageCause.getDamager().getType().toString());
+            broadcastMessage(entityDamageCause.getDamager().getName());
             broadcastMessage(ChatColor.RED + "Return Shod Chon Rquerment Nadasht !!!");
 
             return;
