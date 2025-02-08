@@ -99,12 +99,18 @@ public class SQLiteManager implements DatabaseManager {
         if (amount < 1) return;
 
         Player player = Bukkit.getPlayer(uuid);
-        if (player != null && WorldGuardUtils.isWantedAllowed(player)) {
+        boolean isAllowed = WorldGuardUtils.isWantedAllowed(player);
+
+        assert player != null;
+        System.out.println("[DEBUG] Player: " + player.getName() + ", isWantedAllowed: " + isAllowed);
+
+        if (!isAllowed) {
             return;
         }
 
         setWanted(uuid, getWanted(uuid) + amount);
     }
+
 
     @Override
     public void removeWanted(UUID uuid, int amount) {
@@ -117,11 +123,18 @@ public class SQLiteManager implements DatabaseManager {
         if (level < 0) level = 0;
 
         Player player = Bukkit.getPlayer(uuid);
-        if (player != null && WorldGuardUtils.isWantedAllowed(player)) {
+        boolean isAllowed = WorldGuardUtils.isWantedAllowed(player);
+
+        assert player != null;
+        System.out.println("[DEBUG] Player: " + player.getName() + ", isWantedAllowed: " + isAllowed);
+
+        if (!isAllowed) {
+            System.out.println("[DEBUG] Wanted level update blocked!");
             return;
         }
 
         wantedCache.put(uuid, level);
+        System.out.println("[DEBUG] Wanted level updated to: " + level);
 
         int finalLevel = level;
         CompletableFuture.runAsync(() -> {
