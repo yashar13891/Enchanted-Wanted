@@ -163,7 +163,7 @@ public class MySQLManager implements DatabaseManager {
             }
         }
 
-        String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, ?) ON CONFLICT(uuid) DO UPDATE SET wanted = ?;";
+        String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE wanted = VALUES(wanted);";
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             for (UUID uuid : wantedCache.asMap().keySet()) {
                 Integer wantedLevel = wantedCache.getIfPresent(uuid);
