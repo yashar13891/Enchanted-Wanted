@@ -3,6 +3,7 @@ package org.yashar.enchantedWanted.storages;
 import java.sql.*;
 import java.util.UUID;
 import java.util.logging.Logger;
+
 import org.yashar.enchantedWanted.EnchantedWanted;
 import org.bukkit.Bukkit;
 
