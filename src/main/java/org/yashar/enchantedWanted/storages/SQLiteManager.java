@@ -110,7 +110,7 @@ public class SQLiteManager implements DatabaseManager {
 
         int finalLevel = level;
         CompletableFuture.runAsync(() -> {
-            String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE wanted = VALUES(wanted);";
+            String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, ?) ON CONFLICT(uuid) DO UPDATE SET wanted = ?;";
             String name = Bukkit.getOfflinePlayer(uuid).getName();
             if (name == null) name = "Unknown";
 
@@ -129,7 +129,7 @@ public class SQLiteManager implements DatabaseManager {
         logger.info("[Database] Saving cached wanted levels to database...");
 
         CompletableFuture.runAsync(() -> {
-            String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE wanted = VALUES(wanted);";
+            String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, ?) ON CONFLICT(uuid) DO UPDATE SET wanted = ?;";
             try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
                 for (UUID uuid : wantedCache.asMap().keySet()) {
                     int wantedLevel = wantedCache.getIfPresent(uuid);
