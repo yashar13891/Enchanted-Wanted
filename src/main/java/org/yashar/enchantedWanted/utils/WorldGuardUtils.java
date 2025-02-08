@@ -29,7 +29,7 @@ public class WorldGuardUtils {
 
         ApplicableRegionSet regions = container.createQuery().getApplicableRegions(loc);
 
-        boolean foundAllow = false;
+        boolean foundAllow = true;
 
         for (ProtectedRegion region : regions) {
             StateFlag.State flagValue = region.getFlag(WGWantedFlag.WANTED_ALLOWED);
