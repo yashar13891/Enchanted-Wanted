@@ -1,10 +1,13 @@
 name: EnchantedWanted
 version: '1.0'
 main: org.yashar.enchantedWanted.EnchantedWanted
-api-version: '1.21'
+api-version: '1.20'
 load: POSTWORLD
 author: 'IRDevs'
 description: 'a Simple Plugin For GTA Servers!'
+commands:
+  wanteds:
+    description: Aha
 softdepend:
   - PlaceholderAPI
   - GPS
