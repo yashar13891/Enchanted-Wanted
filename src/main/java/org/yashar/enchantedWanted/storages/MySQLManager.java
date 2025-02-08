@@ -128,4 +128,15 @@ public class MySQLManager implements DatabaseManager {
             logger.severe("[Database] Error setting wanted level: " + e.getMessage());
         }
     }
+
+    public void saveCacheToDatabase() {
+        logger.info("[Database] Saving cached wanted levels to database...");
+
+        for (UUID uuid : wantedCache.asMap().keySet()) {
+            int wantedLevel = wantedCache.getIfPresent(uuid);
+            setWanted(uuid, wantedLevel);
+        }
+
+        logger.info("[Database] All cached wanted levels have been saved!");
+    }
 }

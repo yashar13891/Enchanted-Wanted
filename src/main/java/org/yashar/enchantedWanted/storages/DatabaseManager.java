@@ -3,6 +3,7 @@ package org.yashar.enchantedWanted.storages;
 import java.util.UUID;
 
 public interface DatabaseManager {
+
     void connect();
 
     void disconnect();
@@ -18,5 +19,7 @@ public interface DatabaseManager {
     void removeWanted(UUID uuid, int amount);
 
     void setWanted(UUID uuid, int level);
+
+    void saveCacheToDatabase();
 }
 
