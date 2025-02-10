@@ -54,9 +54,9 @@ public class PlaceHolderManager extends PlaceholderExpansion {
         String emptyStar = config.getString("wanted.empty", "&7✩");
         String wantedColor = config.getString("wanted.number", "&e");
 
-        String formattedWanted = MessageUtils.colorize(player,filledStar.repeat(wantedLevel))
-                + MessageUtils.colorize(player, emptyStar.repeat(6 - wantedLevel));
-        String wantedNumber = MessageUtils.colorize(player,wantedColor + wantedLevel);
+        String formattedWanted = MessageUtils.colorize(filledStar.repeat(wantedLevel))
+                + MessageUtils.colorize(emptyStar.repeat(6 - wantedLevel));
+        String wantedNumber = MessageUtils.colorize(wantedColor + wantedLevel);
 
         return switch (identifier) {
             case "wanted" -> wantedNumber;

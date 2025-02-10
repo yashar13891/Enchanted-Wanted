@@ -39,7 +39,7 @@ public final class EnchantedWanted extends JavaPlugin {
         plugin = this;
         logger = getLogger();
         BStatsManager.setup(this);
-        configManager.loadConfigFile();
+        configManager.load();
         loadConfigDefaults();
 
         setupDatabase();
@@ -55,7 +55,7 @@ public final class EnchantedWanted extends JavaPlugin {
     }
 
 
-    private void setupDatabase() {
+    public void setupDatabase() {
         String databaseType = configManager.getConfig().getString("database.type", "sqlite").toLowerCase();
 
         switch (databaseType) {
@@ -113,7 +113,7 @@ public final class EnchantedWanted extends JavaPlugin {
         }
         config.options().copyDefaults(true);
         try {
-            configManager.saveConfig();
+            configManager.save();
             plugin.getLogger().info("Default configuration values have been copied and saved successfully.");
         } catch (Exception e) {
             plugin.getLogger().log(Level.SEVERE, "Error saving config with defaults", e);

@@ -72,7 +72,7 @@ public class MessageUtils {
         }
         return processed;
     }
-    public static String colorize(Player player, String message) {
+    public static String colorize(String message) {
         String processed = convertLegacyCodesToMiniMessage(message);
         Component component = miniMessage.deserialize(processed);
         return legacySerializer.serialize(component);

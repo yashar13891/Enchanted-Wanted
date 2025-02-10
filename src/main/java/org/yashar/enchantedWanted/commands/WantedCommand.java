@@ -80,9 +80,12 @@ public class WantedCommand implements TabExecutor {
         }
     }
     private void handleAdminReload() {
-        ConfigManager configManager = ConfigManager.getInstance(EnchantedWanted.getInstance());
-        configManager.saveConfig();
-        configManager.reloadConfig();
+        ConfigManager configManager = new ConfigManager(EnchantedWanted.getInstance());
+        configManager.reload();
+        database.saveCacheToDatabase();
+        database.disconnect();
+        EnchantedWanted.getInstance().setupDatabase();
+
 
     }
 
