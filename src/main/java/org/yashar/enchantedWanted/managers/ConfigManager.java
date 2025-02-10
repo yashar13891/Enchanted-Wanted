@@ -9,60 +9,47 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 public class ConfigManager {
-    private static ConfigManager instance;
     private final EnchantedWanted plugin;
     private FileConfiguration config;
     private final File configFile;
+
     public ConfigManager(EnchantedWanted plugin) {
         this.plugin = plugin;
-
-        if (!plugin.getDataFolder().exists()) {
-            plugin.getDataFolder().mkdirs();
-        }
-
         this.configFile = new File(plugin.getDataFolder(), "config.yml");
-        loadConfigFile();
+        load();
     }
 
-    public static ConfigManager getInstance(EnchantedWanted plugin) {
-        if (instance == null) {
-            instance = new ConfigManager(plugin);
-        }
-        return instance;
-    }
-
-    public void loadConfigFile() {
+    public void load() {
         if (!configFile.exists()) {
-            plugin.saveResource("config.yml", false);
-            plugin.getLogger().info("config.yml has been loaded from resources.");
+            plugin.saveDefaultConfig();
+            plugin.getLogger().info("config.yml created & loaded.");
         }
         config = YamlConfiguration.loadConfiguration(configFile);
     }
 
-    public String getMessage(String key, String defaultMessage) {
-        if (config.contains(key)) {
-            return config.getString(key, defaultMessage);
-        } else {
-            return "Message not found: " + key;
-        }
-    }
-
-    public void reloadConfig() {
-        if (!configFile.exists()) {
-            plugin.saveResource("config.yml", false);
-            plugin.getLogger().info("config.yml was not found, loaded from resources.");
-        }
+    public void reload() {
         config = YamlConfiguration.loadConfiguration(configFile);
-        plugin.getLogger().info("config.yml reloaded successfully.");
+        plugin.getLogger().info("config.yml reloaded.");
     }
 
-    public void saveConfig() {
+    public void save() {
         try {
             config.save(configFile);
-            plugin.getLogger().info("config.yml saved successfully.");
         } catch (IOException e) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to save config.yml", e);
+            plugin.getLogger().log(Level.SEVERE, "Error saving config.yml", e);
         }
+    }
+
+    public String getString(String path, String def) {
+        return config.getString(path, def);
+    }
+
+    public int getInt(String path, int def) {
+        return config.getInt(path, def);
+    }
+
+    public boolean getBoolean(String path, boolean def) {
+        return config.getBoolean(path, def);
     }
 
     public FileConfiguration getConfig() {
