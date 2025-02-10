@@ -15,16 +15,27 @@ import org.yashar.enchantedWanted.storages.DatabaseManager;
 import org.yashar.enchantedWanted.utils.MessageUtils;
 import org.yashar.enchantedWanted.utils.Utils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class WantedCommand implements TabExecutor {
     private final DatabaseManager database;
+    private final Map<String, String> commandPermissions = new HashMap<>();
 
     public WantedCommand(DatabaseManager database) {
         this.database = database;
+        initializeCommandPermissions();
+    }
+
+    private void initializeCommandPermissions() {
+        commandPermissions.put("top", "enchantedwanted.top");
+        commandPermissions.put("clear", "enchantedwanted.clear");
+        commandPermissions.put("set", "enchantedwanted.set");
+        commandPermissions.put("add", "enchantedwanted.add");
+        commandPermissions.put("find", "enchantedwanted.find");
+        commandPermissions.put("gps", "enchantedwanted.gps");
+        commandPermissions.put("arrest", "enchantedwanted.arrest");
+        commandPermissions.put("reload", "enchantedwanted.command.reload");
     }
 
     @Override
@@ -70,6 +81,7 @@ public class WantedCommand implements TabExecutor {
     }
     private void handleAdminReload() {
         ConfigManager configManager = ConfigManager.getInstance(EnchantedWanted.getInstance());
+        configManager.saveConfig();
         configManager.reloadConfig();
 
     }
@@ -165,32 +177,40 @@ public class WantedCommand implements TabExecutor {
         return target;
     }
 
+
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         List<String> suggestions = new ArrayList<>();
+
         if (args.length == 1) {
-            if (sender.hasPermission("enchantedwanted.command.reload")) {
-                Collections.addAll(suggestions, "top", "clear", "set", "add", "find", "gps", "arrest", "reload");
-            } else {
-                Collections.addAll(suggestions, "top", "clear", "set", "add", "find", "gps", "arrest");
-            }
+            commandPermissions.forEach((cmd, perm) -> {
+                if (sender.hasPermission(perm)) suggestions.add(cmd);
+            });
         } else if (args.length == 2) {
-            if (List.of("clear", "set", "add", "find").contains(args[0].toLowerCase())) {
-                suggestions.addAll(Bukkit.getOnlinePlayers().stream().map(Player::getName).toList());
+            String subCmd = args[0].toLowerCase();
+            List<String> playerArgs = List.of("clear", "set", "add", "find");
+
+            if (playerArgs.contains(subCmd) && sender.hasPermission(commandPermissions.get(subCmd))) {
+                suggestions.addAll(Bukkit.getOnlinePlayers().stream()
+                        .map(Player::getName)
+                        .toList());
             }
         } else if (args.length == 3) {
-            if (List.of("set", "add").contains(args[0].toLowerCase())) {
+            String subCmd = args[0].toLowerCase();
+            if (List.of("set", "add").contains(subCmd) && sender.hasPermission(commandPermissions.get(subCmd))) {
                 suggestions.add("<value>");
-            } else if (List.of("clear", "gps", "find", "arrest").contains(args[0].toLowerCase())) {
-                suggestions.add("<player>");
             }
         }
+
         return filterSuggestions(args, suggestions);
     }
 
     private List<String> filterSuggestions(String[] args, List<String> suggestions) {
-        String current = args.length > 0 ? args[args.length - 1].toLowerCase() : "";
-        return suggestions.stream().filter(s -> s.toLowerCase().startsWith(current)).collect(Collectors.toList());
+        String currentArg = args[args.length - 1].toLowerCase();
+        return suggestions.stream()
+                .filter(s -> s.toLowerCase().startsWith(currentArg))
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .collect(Collectors.toList());
     }
 }

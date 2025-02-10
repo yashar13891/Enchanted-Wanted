@@ -1,7 +1,6 @@
 package org.yashar.enchantedWanted.managers;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -49,18 +48,15 @@ public class PlaceHolderManager extends PlaceholderExpansion {
     public @Nullable String onPlaceholderRequest(Player player, @NotNull String identifier) {
         if (player == null) return null;
 
-        Bukkit.getLogger().info("Placeholder Requested: " + identifier + " for player: " + player.getName());
-
         int wantedLevel = Math.max(database.getWanted(player.getUniqueId()), 0);
-        Bukkit.getLogger().info("Wanted Level for " + player.getName() + ": " + wantedLevel);
 
         String filledStar = config.getString("wanted.filled", "&c★");
         String emptyStar = config.getString("wanted.empty", "&7✩");
         String wantedColor = config.getString("wanted.number", "&e");
 
         String formattedWanted = MessageUtils.colorize(player,filledStar.repeat(wantedLevel))
-                + MessageUtils.colorize(player,emptyStar.repeat(6 - wantedLevel));
-        String wantedNumber = MessageUtils.colorize(player,wantedColor) + wantedLevel;
+                + MessageUtils.colorize(player, emptyStar.repeat(6 - wantedLevel));
+        String wantedNumber = MessageUtils.colorize(player,wantedColor + wantedLevel);
 
         return switch (identifier) {
             case "wanted" -> wantedNumber;
