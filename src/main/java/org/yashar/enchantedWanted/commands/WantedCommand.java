@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.yashar.enchantedWanted.EnchantedWanted;
-import org.yashar.enchantedWanted.managers.ConfigManager;
 import org.yashar.enchantedWanted.menus.WantedGUI;
 import org.yashar.enchantedWanted.storages.DatabaseManager;
 import org.yashar.enchantedWanted.utils.MessageUtils;
@@ -80,8 +79,8 @@ public class WantedCommand implements TabExecutor {
         }
     }
     private void handleAdminReload() {
-        ConfigManager configManager = new ConfigManager(EnchantedWanted.getInstance());
-        configManager.reload();
+        EnchantedWanted.getInstance().saveConfig();
+        EnchantedWanted.getInstance().reloadConfig();
         database.saveCacheToDatabase();
         database.disconnect();
         EnchantedWanted.getInstance().setupDatabase();
@@ -137,7 +136,7 @@ public class WantedCommand implements TabExecutor {
 
     private void handleGPS(Player player) {
         if (checkPermission(player, "enchantedwanted.gps")) return;
-        Utils.startGPS(player.getUniqueId());
+        Utils.startGPS(player.getUniqueId(), player.getUniqueId());
     }
 
     private static final String HELP_MESSAGE = String.join(System.lineSeparator(),

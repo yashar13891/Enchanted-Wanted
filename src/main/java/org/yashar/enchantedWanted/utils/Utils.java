@@ -6,10 +6,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.yashar.enchantedWanted.storages.DatabaseManager;
 
-import java.util.Objects;
 import java.util.UUID;
 
-import static java.security.Security.getProvider;
 
 public class Utils {
     private static DatabaseManager database;
@@ -18,7 +16,7 @@ public class Utils {
         Utils.database = database;
     }
 
-    public static void startGPS(UUID uuid) {
+    public static void startGPS(UUID uuidplayer, UUID uuidwanted) {
     }
 
     public static void unCuff(UUID uuid) {

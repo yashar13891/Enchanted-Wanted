@@ -3,7 +3,6 @@ package org.yashar.enchantedWanted;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import org.yashar.enchantedWanted.commands.*;
@@ -14,7 +13,6 @@ import org.yashar.enchantedWanted.storages.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.yashar.enchantedWanted.utils.PluginCheckUtil.checkPlugin;
@@ -32,15 +30,13 @@ public final class EnchantedWanted extends JavaPlugin {
     public static Logger getPluginLogger() {
         return logger;
     }
-    ConfigManager configManager = new ConfigManager(this);
 
     @Override
     public void onEnable() {
+        saveDefaultConfig();
         plugin = this;
         logger = getLogger();
         BStatsManager.setup(this);
-        configManager.load();
-        loadConfigDefaults();
 
         setupDatabase();
         checkDependencies();
@@ -56,7 +52,7 @@ public final class EnchantedWanted extends JavaPlugin {
 
 
     public void setupDatabase() {
-        String databaseType = configManager.getConfig().getString("database.type", "sqlite").toLowerCase();
+        String databaseType = getConfig().getString("database.type", "sqlite").toLowerCase();
 
         switch (databaseType) {
             case "mysql":
@@ -102,21 +98,6 @@ public final class EnchantedWanted extends JavaPlugin {
             command.setExecutor(executor);
             command.setPermission(String.valueOf(permission));
             commands.add(command);
-        }
-    }
-    private void loadConfigDefaults() {
-        FileConfiguration config = configManager.getConfig();
-
-        if (config == null) {
-            plugin.getLogger().warning("Configuration is not loaded. Aborting copying defaults.");
-            return;
-        }
-        config.options().copyDefaults(true);
-        try {
-            configManager.save();
-            plugin.getLogger().info("Default configuration values have been copied and saved successfully.");
-        } catch (Exception e) {
-            plugin.getLogger().log(Level.SEVERE, "Error saving config with defaults", e);
         }
     }
 }

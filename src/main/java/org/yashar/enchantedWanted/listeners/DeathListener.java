@@ -54,7 +54,7 @@ public class DeathListener implements Listener {
     }
 
     private void executeKillCommands(Player killer, Player victem) {
-        List<String> commands = configManager.getConfig().getStringList("kill-commands");
+        List<String> commands = EnchantedWanted.getInstance().getConfig().getStringList("kill-commands");
         for (String command : commands) {
             if (command.startsWith("[KILLER]")) {
                 String playerCommand = command.replace("[KILLER] ", "");

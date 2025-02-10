@@ -1,7 +1,6 @@
 package org.yashar.enchantedWanted.managers;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,11 +11,9 @@ import org.yashar.enchantedWanted.utils.MessageUtils;
 public class PlaceHolderManager extends PlaceholderExpansion {
 
     private final DatabaseManager database;
-    private final FileConfiguration config;
 
     public PlaceHolderManager(@NotNull DatabaseManager database, @NotNull EnchantedWanted plugin) {
         this.database = database;
-        this.config = plugin.getConfig();
     }
 
     @Override
@@ -50,9 +47,9 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 
         int wantedLevel = Math.max(database.getWanted(player.getUniqueId()), 0);
 
-        String filledStar = config.getString("wanted.filled", "&c★");
-        String emptyStar = config.getString("wanted.empty", "&7✩");
-        String wantedColor = config.getString("wanted.number", "&e");
+        String filledStar = EnchantedWanted.getInstance().getConfig().getString("wanted.filled", "&c★");
+        String emptyStar = EnchantedWanted.getInstance().getConfig().getString("wanted.empty", "&7✩");
+        String wantedColor = EnchantedWanted.getInstance().getConfig().getString("wanted.number", "&e");
 
         String formattedWanted = MessageUtils.colorize(filledStar.repeat(wantedLevel))
                 + MessageUtils.colorize(emptyStar.repeat(6 - wantedLevel));
