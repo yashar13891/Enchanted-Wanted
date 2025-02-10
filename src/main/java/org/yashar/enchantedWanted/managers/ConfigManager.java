@@ -21,20 +21,26 @@ public class ConfigManager {
 
     public void load() {
         if (!configFile.exists()) {
-            plugin.saveDefaultConfig();
-            plugin.getLogger().info("config.yml created & loaded.");
+            plugin.saveResource("config.yml", false);
+            plugin.getLogger().info("config.yml created & loaded from resources.");
         }
         config = YamlConfiguration.loadConfiguration(configFile);
     }
 
     public void reload() {
+        if (!configFile.exists()) {
+            plugin.saveResource("config.yml", false);
+            plugin.getLogger().info("config.yml was missing, loaded from resources.");
+        }
         config = YamlConfiguration.loadConfiguration(configFile);
-        plugin.getLogger().info("config.yml reloaded.");
+        plugin.getLogger().info("config.yml reloaded successfully.");
     }
+
 
     public void save() {
         try {
             config.save(configFile);
+            plugin.getLogger().info("config.yml saved successfully.");
         } catch (IOException e) {
             plugin.getLogger().log(Level.SEVERE, "Error saving config.yml", e);
         }
