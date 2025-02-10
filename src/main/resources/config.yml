@@ -8,3 +8,7 @@ database:
 kill-commands:
   - "[PLAYER] command"
   - "[CONSOLE] command"
+wanted:
+  filled: "&c★"
+  empty: "&7✩"
+  number: "&e"
