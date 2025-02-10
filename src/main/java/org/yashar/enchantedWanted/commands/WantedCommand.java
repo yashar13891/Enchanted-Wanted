@@ -8,6 +8,8 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.yashar.enchantedWanted.EnchantedWanted;
+import org.yashar.enchantedWanted.managers.ConfigManager;
 import org.yashar.enchantedWanted.menus.WantedGUI;
 import org.yashar.enchantedWanted.storages.DatabaseManager;
 import org.yashar.enchantedWanted.utils.MessageUtils;
@@ -18,10 +20,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class WantedsCommand implements TabExecutor {
+public class WantedCommand implements TabExecutor {
     private final DatabaseManager database;
 
-    public WantedsCommand(DatabaseManager database) {
+    public WantedCommand(DatabaseManager database) {
         this.database = database;
     }
 
@@ -43,6 +45,7 @@ public class WantedsCommand implements TabExecutor {
             case "find" -> handleFind(player, args);
             case "gps" -> handleGPS(player);
             case "arrest" -> handleArrest(player);
+            case "reload" ->  handleAdminReload();
             default -> sendHelpMessage(player);
         }
         return true;
@@ -64,6 +67,11 @@ public class WantedsCommand implements TabExecutor {
             database.setWanted(target.getUniqueId(), 0);
             MessageUtils.sendMessage(player, "<#ffd100>Cleared <#ff9b00><player>'s<#ffd100> wanted points!".replace("<player>", player.getName()));
         }
+    }
+    private void handleAdminReload() {
+        ConfigManager configManager = ConfigManager.getInstance(EnchantedWanted.getInstance());
+        configManager.reloadConfig();
+
     }
 
     private void handleSet(Player player, String[] args) {
@@ -162,7 +170,11 @@ public class WantedsCommand implements TabExecutor {
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         List<String> suggestions = new ArrayList<>();
         if (args.length == 1) {
-            Collections.addAll(suggestions, "top", "clear", "set", "add", "find", "gps", "arrest");
+            if (sender.hasPermission("enchantedwanted.command.reload")) {
+                Collections.addAll(suggestions, "top", "clear", "set", "add", "find", "gps", "arrest", "reload");
+            } else {
+                Collections.addAll(suggestions, "top", "clear", "set", "add", "find", "gps", "arrest");
+            }
         } else if (args.length == 2) {
             if (List.of("clear", "set", "add", "find").contains(args[0].toLowerCase())) {
                 suggestions.addAll(Bukkit.getOnlinePlayers().stream().map(Player::getName).toList());

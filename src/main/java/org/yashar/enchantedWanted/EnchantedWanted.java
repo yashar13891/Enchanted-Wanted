@@ -2,6 +2,7 @@ package org.yashar.enchantedWanted;
 
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import org.yashar.enchantedWanted.commands.*;
@@ -10,6 +11,9 @@ import org.yashar.enchantedWanted.managers.*;
 import org.yashar.enchantedWanted.menus.*;
 import org.yashar.enchantedWanted.storages.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.bukkit.Bukkit.getPluginManager;
@@ -36,16 +40,16 @@ public final class EnchantedWanted extends JavaPlugin {
         logger = getLogger();
         BStatsManager.setup(this);
         configManager.loadConfigFile();
+        loadConfigDefaults();
+
         setupDatabase();
-        registerCommands();
         checkDependencies();
         registerListeners();
-
+        registerCommands();
         logger.info("Enchanted Wanted Enabled! Thanks For Using (:");
     }
     @Override
     public void onDisable() {
-        configManager.saveConfig();
         database.saveCacheToDatabase();
         database.disconnect();
     }
@@ -75,30 +79,44 @@ public final class EnchantedWanted extends JavaPlugin {
     }
 
     private void registerCommands() {
-        registerCommand(new WantedsCommand(database));
+        registerCommand("wanted",new WantedCommand(database), Permission.ADMIN);
     }
 
     private void checkDependencies() {
         checkPlugin("PlaceholderAPI", logger);
         checkPlugin("GPS", logger);
         checkPlugin("CuffEm", logger);
+        checkPlugin("BetterJails", logger);
     }
 
     private void registerListeners() {
         WantedGUI wantedGUI = new WantedGUI(database);
         getPluginManager().registerEvents(new DeathListener(database), this);
         getPluginManager().registerEvents(wantedGUI, this);
-        new PlaceHolderManager(database).register();
+        new PlaceHolderManager(database, this).register();
     }
-
-    private void registerCommand(CommandExecutor executor) {
-        PluginCommand command = getCommand("wanteds");
+    List<PluginCommand> commands = new ArrayList<>();
+    private void registerCommand(String name, CommandExecutor executor, Permission permission) {
+        PluginCommand command = getCommand(name);
         if (command != null) {
             command.setExecutor(executor);
-            command.setPermission(Permission.ADMIN.toString());
-        } else {
-            logger.warning("[Command] Command '" + "wanteds" + "' not found in plugin.yml!");
+            command.setPermission(permission.toString());
+            commands.add(command);
         }
     }
+    private void loadConfigDefaults() {
+        FileConfiguration config = configManager.getConfig();
 
+        if (config == null) {
+            plugin.getLogger().warning("Configuration is not loaded. Aborting copying defaults.");
+            return;
+        }
+        config.options().copyDefaults(true);
+        try {
+            configManager.saveConfig();
+            plugin.getLogger().info("Default configuration values have been copied and saved successfully.");
+        } catch (Exception e) {
+            plugin.getLogger().log(Level.SEVERE, "Error saving config with defaults", e);
+        }
+    }
 }

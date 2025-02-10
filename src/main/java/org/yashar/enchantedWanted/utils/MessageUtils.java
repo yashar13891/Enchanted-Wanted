@@ -1,11 +1,13 @@
 package org.yashar.enchantedWanted.utils;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
+import org.yashar.enchantedWanted.EnchantedWanted;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,11 +61,21 @@ public class MessageUtils {
         }
         return builder.toString();
     }
-    public static void sendMessage(Player player, String message) {
+    public static String sendMessage(Player player, String message) {
         String processed = convertLegacyCodesToMiniMessage(message);
         Component component = miniMessage.deserialize(processed);
         String legacyMessage = legacySerializer.serialize(component);
-        player.sendMessage(legacyMessage);
+        if (EnchantedWanted.getInstance().getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            player.sendMessage(PlaceholderAPI.setPlaceholders(player, legacyMessage));
+        } else {
+            player.sendMessage(legacyMessage);
+        }
+        return processed;
+    }
+    public static String colorize(Player player, String message) {
+        String processed = convertLegacyCodesToMiniMessage(message);
+        Component component = miniMessage.deserialize(processed);
+        return legacySerializer.serialize(component);
     }
     public static void sendClickableCommand(Player player, String message, String command) {
         String processed = convertLegacyCodesToMiniMessage(message);

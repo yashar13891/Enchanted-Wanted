@@ -9,6 +9,8 @@ import org.yashar.enchantedWanted.storages.DatabaseManager;
 import java.util.Objects;
 import java.util.UUID;
 
+import static java.security.Security.getProvider;
+
 public class Utils {
     private static DatabaseManager database;
 
@@ -21,7 +23,7 @@ public class Utils {
 
     public static void unCuff(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
-        CuffEmPlugin cuffem = Objects.requireNonNull(Bukkit.getServicesManager().getRegistration(CuffEmPlugin.class)).getProvider();
+        CuffEmPlugin cuffem = Bukkit.getServicesManager().getRegistration(CuffEmPlugin.class).getProvider();
         if (cuffem.getDragger().isBeingDragged(player)) {
             try {
                 cuffem.getDragger().stopDragging(player);
@@ -32,12 +34,18 @@ public class Utils {
         }
     }
     public static void arrestPlayer(UUID uuid) {
+        if (uuid == null) {
+            System.out.println("UUID is Null");
+            return;
+        }
         Player player = Bukkit.getPlayer(uuid);
         if (player != null) {
             unCuff(player.getUniqueId());
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"/jail " + player.getName() + " " + database.getWanted(player.getUniqueId()) * 5);
             database.setWanted(player.getUniqueId(),0);
 
+        } else {
+            System.out.println("Player is Null");
         }
     }
 }

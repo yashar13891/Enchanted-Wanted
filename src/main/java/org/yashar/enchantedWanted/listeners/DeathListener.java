@@ -44,7 +44,7 @@ public class DeathListener implements Listener {
             sendMessage(killer, "<#ff5733>Shoma hich wantedi dar yaft nakardid");
         }
 
-        executeKillCommands(killer);
+        executeKillCommands(killer, victim);
     }
 
     private boolean isHoldingTotem(Player player) {
@@ -53,12 +53,16 @@ public class DeathListener implements Listener {
                 player.getInventory().getItemInMainHand().equals(totem);
     }
 
-    private void executeKillCommands(Player killer) {
+    private void executeKillCommands(Player killer, Player victem) {
         List<String> commands = configManager.getConfig().getStringList("kill-commands");
         for (String command : commands) {
-            if (command.startsWith("[PLAYER]")) {
-                String playerCommand = command.replace("[PLAYER] ", "");
+            if (command.startsWith("[KILLER]")) {
+                String playerCommand = command.replace("[KILLER] ", "");
                 killer.performCommand(playerCommand);
+
+            } else if (command.startsWith("[VICTIM]")) {
+                String victimCommand = command.replace("[VICTIM]", "");
+                victem.performCommand(victimCommand);
             } else if (command.startsWith("[CONSOLE]")) {
                 String consoleCommand = command.replace("[CONSOLE] ", "").replace("%player%", killer.getName());
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), consoleCommand);

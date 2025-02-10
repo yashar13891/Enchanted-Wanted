@@ -6,9 +6,10 @@ load: POSTWORLD
 author: 'IRDevs'
 description: 'a Simple Plugin For GTA Servers!'
 commands:
-  wanteds:
+  wanted:
     description: Aha
 softdepend:
   - PlaceholderAPI
   - GPS
   - CuffEm
+  - BetterJails
