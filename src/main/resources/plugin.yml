@@ -3,8 +3,8 @@ version: '1.0'
 main: org.yashar.enchantedWanted.EnchantedWanted
 api-version: '1.20'
 load: POSTWORLD
-author: 'IRDevs'
-description: 'a Simple Plugin For GTA Servers!'
+author: "IRDevs"
+description: 'Enchanted Wanted is a Plugin For GTA Servers'
 commands:
   wanted:
     description: Aha
