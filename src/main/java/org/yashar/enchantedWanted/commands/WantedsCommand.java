@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.yashar.enchantedWanted.menus.WantedGUI;
 import org.yashar.enchantedWanted.storages.DatabaseManager;
+import org.yashar.enchantedWanted.utils.MessageUtils;
 import org.yashar.enchantedWanted.utils.Utils;
 
 import java.util.ArrayList;
@@ -58,10 +59,10 @@ public class WantedsCommand implements TabExecutor {
         Player target = getTargetPlayer(player, args[1]);
         if (target == null) return;
         if (database.getWanted(target.getUniqueId()) == 0) {
-            player.sendMessage(ChatColor.YELLOW + target.getName() + "dossen't have wanted!");
+            MessageUtils.sendMessage(player,"<#ff9b00><player><#ffd100> dossen't have wanted!".replace("<player>", player.getName()));
         } else if (database.getWanted(target.getUniqueId()) > 0) {
             database.setWanted(target.getUniqueId(), 0);
-            player.sendMessage(ChatColor.YELLOW + "Cleared " + ChatColor.GOLD + target.getName() + ChatColor.YELLOW + "'s wanted points!");
+            MessageUtils.sendMessage(player, "<#ffd100>Cleared <#ff9b00><player>'s<#ffd100> wanted points!".replace("<player>", player.getName()));
         }
     }
 
@@ -73,9 +74,9 @@ public class WantedsCommand implements TabExecutor {
             Player target = getTargetPlayer(player, args[1]);
             if (target == null) return;
             database.setWanted(target.getUniqueId(), value);
-            player.sendMessage(ChatColor.YELLOW + "Set " + ChatColor.GOLD + target.getName() + ChatColor.YELLOW + "'s wanted points to " + ChatColor.RED + value);
+            MessageUtils.sendMessage(player, "<#ffd100>Set <#ff9b00><player>'s <#ffd100>wanted points to <value>".replace("<player>", player.getName()).replace("<value>", String.valueOf(value)));
         } catch (NumberFormatException e) {
-            player.sendMessage(ChatColor.RED + "Invalid number format!");
+            MessageUtils.sendMessage(player,"<#e01400>Invalid number format!");
         }
     }
 
@@ -87,9 +88,11 @@ public class WantedsCommand implements TabExecutor {
             Player target = getTargetPlayer(player, args[1]);
             if (target == null) return;
             database.addWanted(target.getUniqueId(), value);
-            player.sendMessage(ChatColor.YELLOW + "Added " + ChatColor.RED + value + ChatColor.YELLOW + " wanted points to " + ChatColor.GOLD + target.getName());
+            MessageUtils.sendMessage(player, "<#ffd100>Added <#ff9b00><value> <#ffd100>wanted points to <player>"
+                    .replace("<player>", player.getName())
+                    .replace("<value>", String.valueOf(value)));
         } catch (NumberFormatException e) {
-            player.sendMessage(ChatColor.RED + "Invalid number format!");
+            MessageUtils.sendMessage(player, "&cInvalid number format!");
         }
     }
 
@@ -104,7 +107,9 @@ public class WantedsCommand implements TabExecutor {
         Player target = getTargetPlayer(player, args[1]);
         if (target == null) return;
         int wantedPoints = database.getWanted(target.getUniqueId());
-        player.sendMessage(ChatColor.GOLD + target.getName() + ChatColor.YELLOW + " has " + ChatColor.RED + wantedPoints + ChatColor.YELLOW + " wanted points");
+        MessageUtils.sendMessage(player,"<#ff9b00><player> <#ffd100>has <wanted> wanted points"
+                .replace("<player>",player.getName())
+                .replace("<wanted>", String.valueOf(wantedPoints)));
     }
 
     private void handleGPS(Player player) {
@@ -112,21 +117,25 @@ public class WantedsCommand implements TabExecutor {
         Utils.startGPS(player.getUniqueId());
     }
 
+    private static final String HELP_MESSAGE = String.join(System.lineSeparator(),
+            "<#555555>▼ Wanted Commands ▼",
+            "<#ffd100>/wanted top <#ff9b00>- Show top wanted players",
+            "<#ffd100>/wanted clear <player> <#ff9b00>- Clear wanted points",
+            "<#ffd100>/wanted set <player> <value> <#ff9b00>- Set wanted points",
+            "<#ffd100>/wanted add <player> <value> <#ff9b00>- Add wanted points",
+            "<#ffd100>/wanted find <player> <#ff9b00>- Check wanted status",
+            "<#ffd100>/wanted gps <#ff9b00>- Track nearest wanted",
+            "<#ffd100>/wanted arrest <#ff9b00>- Arrest a wanted player"
+    );
+
     private void sendHelpMessage(Player player) {
-        String help = ChatColor.DARK_GRAY + "▼ Wanted Commands ▼\n" +
-                ChatColor.GOLD + "/wanted top " + ChatColor.YELLOW + "- Show top wanted players\n" +
-                ChatColor.GOLD + "/wanted clear <player> " + ChatColor.YELLOW + "- Clear wanted points\n" +
-                ChatColor.GOLD + "/wanted set <player> <value> " + ChatColor.YELLOW + "- Set wanted points\n" +
-                ChatColor.GOLD + "/wanted add <player> <value> " + ChatColor.YELLOW + "- Add wanted points\n" +
-                ChatColor.GOLD + "/wanted find <player> " + ChatColor.YELLOW + "- Check wanted status\n" +
-                ChatColor.GOLD + "/wanted gps " + ChatColor.YELLOW + "- Track nearest wanted\n" +
-                ChatColor.GOLD + "/wanted arrest " + ChatColor.YELLOW + "- Arrest a wanted player";
-        player.sendMessage(help);
+        MessageUtils.sendMessage(player, HELP_MESSAGE);
     }
+
 
     private boolean checkPermission(Player player, String permission) {
         if (!player.hasPermission(permission)) {
-            player.sendMessage(ChatColor.RED + "You don't have permission!");
+            MessageUtils.sendMessage(player, "&cYou don't have permission!");
             return true;
         }
         return false;
@@ -134,7 +143,7 @@ public class WantedsCommand implements TabExecutor {
 
     private boolean validateArgs(Player player, String[] args, int required, String usage) {
         if (args.length < required) {
-            player.sendMessage(ChatColor.RED + usage);
+            MessageUtils.sendMessage(player,"<#e01400>" + usage);
             return true;
         }
         return false;
@@ -143,7 +152,7 @@ public class WantedsCommand implements TabExecutor {
     private Player getTargetPlayer(Player player, String name) {
         Player target = Bukkit.getPlayerExact(name);
         if (target == null) {
-            player.sendMessage(ChatColor.RED + "Player not found!");
+            MessageUtils.sendMessage(player,"&cPlayer not found!");
         }
         return target;
     }
