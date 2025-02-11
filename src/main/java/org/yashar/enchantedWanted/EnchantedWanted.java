@@ -11,8 +11,6 @@ import org.yashar.enchantedWanted.managers.*;
 import org.yashar.enchantedWanted.menus.*;
 import org.yashar.enchantedWanted.storages.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
 import static org.yashar.enchantedWanted.utils.PluginCheckUtil.checkPlugin;
@@ -75,7 +73,8 @@ public final class EnchantedWanted extends JavaPlugin {
     }
 
     private void registerCommands() {
-        registerCommand("wanted",new WantedCommand(database), Permission.ADMIN);
+        registerCommand("wanted",new WantedCommand(database), String.valueOf(Permission.PLAYER));
+        registerCommand("wanteds", new WantedsCommand(database), String.valueOf(Permission.PLAYER));
     }
 
     private void checkDependencies() {
@@ -91,13 +90,19 @@ public final class EnchantedWanted extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(wantedGUI, this);
         new PlaceHolderManager(database, this).register();
     }
-    List<PluginCommand> commands = new ArrayList<>();
-    private void registerCommand(String name, CommandExecutor executor, Permission permission) {
+
+    private void registerCommand(String name, CommandExecutor executor, String permission) {
         PluginCommand command = getCommand(name);
-        if (command != null) {
-            command.setExecutor(executor);
-            command.setPermission(String.valueOf(permission));
-            commands.add(command);
+        if (command == null) {
+            getLogger().warning("Command '" + name + "' not found in plugin.yml!");
+            return;
+        }
+
+        command.setExecutor(executor);
+        if (permission != null && !permission.isEmpty()) {
+            command.setPermission(permission);
         }
     }
+
+
 }

@@ -49,9 +49,9 @@ public class WantedCommand implements TabExecutor {
         }
         switch (args[0].toLowerCase()) {
             case "top" -> handleTop(player);
-            case "clear" -> handleClear(player, args);
-            case "set" -> handleSet(player, args);
-            case "add" -> handleAdd(player, args);
+            case "clear" -> handleClear(player, (Player) sender, args);
+            case "set" -> handleSet(player, (Player) sender, args);
+            case "add" -> handleAdd(player, (Player) sender, args);
             case "find" -> handleFind(player, args);
             case "gps" -> handleGPS(player);
             case "arrest" -> handleArrest(player);
@@ -66,7 +66,7 @@ public class WantedCommand implements TabExecutor {
         WantedGUI.openWantedMenu(player, 0);
     }
 
-    private void handleClear(Player player, String[] args) {
+    private void handleClear(Player player,Player sender, String[] args) {
         if (checkPermission(player, "enchantedwanted.clear")) return;
         if (validateArgs(player, args, 2, "Usage: /wanted clear <player>")) return;
         Player target = getTargetPlayer(player, args[1]);
@@ -76,6 +76,11 @@ public class WantedCommand implements TabExecutor {
         } else if (database.getWanted(target.getUniqueId()) > 0) {
             database.setWanted(target.getUniqueId(), 0);
             MessageUtils.sendMessage(player, "<#ffd100>Cleared <#ff9b00><player>'s<#ffd100> wanted points!".replace("<player>", player.getName()));
+            Bukkit.getOnlinePlayers().forEach(playerpolice -> {
+                if (playerpolice.hasPermission("enchantedwanted.police.alerts")) {
+                    MessageUtils.sendMessage(player, "&8[&1PoliceRadio&8] &fTamamie police ha wanted player " + player.getName() + " tavasot " + sender.getName() + " clear shod!");
+                }
+            });
         }
     }
     private void handleAdminReload() {
@@ -88,7 +93,7 @@ public class WantedCommand implements TabExecutor {
 
     }
 
-    private void handleSet(Player player, String[] args) {
+    private void handleSet(Player player,Player sender, String[] args) {
         if (checkPermission(player, "enchantedwanted.set")) return;
         if (validateArgs(player, args, 3, "Usage: /wanted set <player> <value>")) return;
         try {
@@ -97,12 +102,17 @@ public class WantedCommand implements TabExecutor {
             if (target == null) return;
             database.setWanted(target.getUniqueId(), value);
             MessageUtils.sendMessage(player, "<#ffd100>Set <#ff9b00><player>'s <#ffd100>wanted points to <value>".replace("<player>", player.getName()).replace("<value>", String.valueOf(value)));
+            Bukkit.getOnlinePlayers().forEach(playerpolice -> {
+                if (playerpolice.hasPermission("enchantedwanted.police.alerts")) {
+                    MessageUtils.sendMessage(player, "&8[&1PoliceRadio&8] &fTamamie police ha wanted player " + player.getName() + " tavasot " + sender.getName() + " be " + value + " set shod!");
+                }
+            });
         } catch (NumberFormatException e) {
             MessageUtils.sendMessage(player,"<#e01400>Invalid number format!");
         }
     }
 
-    private void handleAdd(Player player, String[] args) {
+    private void handleAdd(Player player,Player sender, String[] args) {
         if (checkPermission(player, "enchantedwanted.add")) return;
         if (validateArgs(player, args, 3, "Usage: /wanted add <player> <value>")) return;
         try {
@@ -113,6 +123,11 @@ public class WantedCommand implements TabExecutor {
             MessageUtils.sendMessage(player, "<#ffd100>Added <#ff9b00><value> <#ffd100>wanted points to <player>"
                     .replace("<player>", player.getName())
                     .replace("<value>", String.valueOf(value)));
+            Bukkit.getOnlinePlayers().forEach(playerpolice -> {
+                if (playerpolice.hasPermission("enchantedwanted.police.alerts")) {
+                    MessageUtils.sendMessage(player, "&8[&1PoliceRadio&8] &fTamamie police ha wanted player " + player.getName() + " tavasot " + sender.getName() + " be " + value + " set shod!");
+                }
+            });
         } catch (NumberFormatException e) {
             MessageUtils.sendMessage(player, "&cInvalid number format!");
         }

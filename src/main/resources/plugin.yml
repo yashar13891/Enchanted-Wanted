@@ -8,6 +8,8 @@ description: 'Enchanted Wanted is a Plugin For GTA Servers'
 commands:
   wanted:
     description: Aha
+  wanteds:
+    description: With this command you can get your wanted
 softdepend:
   - PlaceholderAPI
   - GPS

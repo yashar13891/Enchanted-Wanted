@@ -8,8 +8,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.yashar.enchantedWanted.EnchantedWanted;
-import org.yashar.enchantedWanted.managers.ConfigManager;
 import org.yashar.enchantedWanted.storages.DatabaseManager;
+import org.yashar.enchantedWanted.utils.MessageUtils;
 
 import java.util.List;
 
@@ -18,7 +18,6 @@ import static org.yashar.enchantedWanted.utils.MessageUtils.sendMessage;
 public class DeathListener implements Listener {
 
     private final DatabaseManager database;
-    ConfigManager configManager = new ConfigManager(EnchantedWanted.getInstance());
 
     public DeathListener(DatabaseManager database) {
         this.database = database;
@@ -35,11 +34,16 @@ public class DeathListener implements Listener {
 
         int wanted = database.getWanted(killer.getUniqueId());
         database.addWanted(killer.getUniqueId(), 1);
-
         if (wanted != database.getWanted(killer.getUniqueId())) {
             sendMessage(killer, "<#ff5733>Hey! You've been added to the wanted list. Current Wanted: %Wanted%</#ff5733>"
                     .replace("%Wanted%", String.valueOf(database.getWanted(killer.getUniqueId()))));
             sendMessage(victim, "<#ff5733>You were killed by a wanted player!</#ff5733>");
+
+            Bukkit.getOnlinePlayers().forEach(player -> {
+                if (player.hasPermission("enchantedwanted.police.alerts")) {
+                    sendMessage(player, "&8[&1PoliceRadio&8] &fTamamie police ha player " + player.getName() + " yek wanted gereft");
+                }
+            });
         } else {
             sendMessage(killer, "<#ff5733>Shoma hich wantedi dar yaft nakardid");
         }
