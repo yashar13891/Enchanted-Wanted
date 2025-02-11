@@ -101,8 +101,8 @@ public class MySQLManager implements DatabaseManager {
     @Override
     public void addWanted(UUID uuid, int amount) {
         if (amount < 1) return;
-
-
+        int maxWanted = EnchantedWanted.getInstance().getConfig().getInt("wanted.max", 6);
+        setWanted(uuid, Math.min(maxWanted, getWanted(uuid) + amount));
         setWanted(uuid, getWanted(uuid) + amount);
     }
 
@@ -114,11 +114,10 @@ public class MySQLManager implements DatabaseManager {
 
     @Override
     public void setWanted(UUID uuid, int level) {
+        int maxWanted = EnchantedWanted.getInstance().getConfig().getInt("wanted.max", 6);
         if (level < 0) level = 0;
-
-
+        if (level > maxWanted) level = maxWanted;
         wantedCache.put(uuid, level);
-
         int finalLevel = level;
         CompletableFuture.runAsync(() -> {
             String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE wanted = ?;";
