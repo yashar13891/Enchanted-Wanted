@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.yashar.enchantedWanted.EnchantedWanted;
+import org.yashar.enchantedWanted.managers.PoliceAlertManager;
 import org.yashar.enchantedWanted.menus.WantedGUI;
 import org.yashar.enchantedWanted.storages.DatabaseManager;
 import org.yashar.enchantedWanted.utils.MessageUtils;
@@ -35,6 +36,7 @@ public class WantedCommand implements TabExecutor {
         commandPermissions.put("gps", "enchantedwanted.gps");
         commandPermissions.put("arrest", "enchantedwanted.arrest");
         commandPermissions.put("reload", "enchantedwanted.command.reload");
+        commandPermissions.put("policealert", "enchantedwanted.policealert");
     }
 
     @Override
@@ -56,6 +58,7 @@ public class WantedCommand implements TabExecutor {
             case "gps" -> handleGPS(player);
             case "arrest" -> handleArrest(player);
             case "reload" ->  handleAdminReload();
+            case "policealert" -> handlePoliceAlert(player);
             default -> sendHelpMessage(player);
         }
         return true;
@@ -147,6 +150,11 @@ public class WantedCommand implements TabExecutor {
         MessageUtils.sendMessage(player,"<#ff9b00><player> <#ffd100>has <wanted> wanted points"
                 .replace("<player>",player.getName())
                 .replace("<wanted>", String.valueOf(wantedPoints)));
+    }
+    private void handlePoliceAlert(Player player) {
+        final PoliceAlertManager policeAlertManager;
+        policeAlertManager = new PoliceAlertManager();
+        policeAlertManager.togglePoliceAlert(player.getUniqueId());
     }
 
     private void handleGPS(Player player) {
