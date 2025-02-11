@@ -9,6 +9,7 @@ kill-commands:
   - "[PLAYER] command"
   - "[CONSOLE] command"
 wanted:
+  max: 6
   filled: "&c★"
   empty: "&7✩"
   number: "&e"

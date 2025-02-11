@@ -45,14 +45,15 @@ public class PlaceHolderManager extends PlaceholderExpansion {
     public @Nullable String onPlaceholderRequest(Player player, @NotNull String identifier) {
         if (player == null) return null;
 
-        int wantedLevel = Math.max(database.getWanted(player.getUniqueId()), 0);
+        int maxWanted = EnchantedWanted.getInstance().getConfig().getInt("wanted.max", 6);
+        int wantedLevel = Math.min(maxWanted, Math.max(database.getWanted(player.getUniqueId()), 0));
 
         String filledStar = EnchantedWanted.getInstance().getConfig().getString("wanted.filled", "&c★");
         String emptyStar = EnchantedWanted.getInstance().getConfig().getString("wanted.empty", "&7✩");
         String wantedColor = EnchantedWanted.getInstance().getConfig().getString("wanted.number", "&e");
 
         String formattedWanted = MessageUtils.colorize(filledStar.repeat(wantedLevel))
-                + MessageUtils.colorize(emptyStar.repeat(6 - wantedLevel));
+                + MessageUtils.colorize(emptyStar.repeat(maxWanted - wantedLevel));
         String wantedNumber = MessageUtils.colorize(wantedColor + wantedLevel);
 
         return switch (identifier) {
