@@ -102,8 +102,8 @@ public class WantedCommand implements TabExecutor {
             if (target == null) return;
             database.setWanted(target.getUniqueId(), value);
             MessageUtils.sendMessage(player, "<#ffd100>Set <#ff9b00><player>'s <#ffd100>wanted points to <value>".replace("<player>", player.getName()).replace("<value>", String.valueOf(value)));
-            Bukkit.getOnlinePlayers().forEach(playerpolice -> {
-                if (playerpolice.hasPermission("enchantedwanted.police.alerts")) {
+            Bukkit.getOnlinePlayers().forEach(policeplayer -> {
+                if (policeplayer.hasPermission("enchantedwanted.police.alerts")) {
                     MessageUtils.sendMessage(player, "&8[&1PoliceRadio&8] &fTamamie police ha wanted player " + player.getName() + " tavasot " + sender.getName() + " be " + value + " set shod!");
                 }
             });
