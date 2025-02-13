@@ -89,7 +89,7 @@ public class MySQLManager implements DatabaseManager {
         return 0;
     }
 
-        @Override
+    @Override
     public boolean isConnected() {
         try {
             return connection != null && !connection.isClosed();
