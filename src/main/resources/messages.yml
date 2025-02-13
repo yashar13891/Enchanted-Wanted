@@ -35,7 +35,7 @@ complaint-expire: "<SOLID:E54A10>Complaint time for getting killed by <SOLID:D2E
 complaint-already-expire: "<SOLID:E54A10>Your complaint time is already expired!"
 complaint-submit: "&6Your complaint has been submitted!"
 cant-complain: "<SOLID:E54A10>You can't complain at this time."
-#log-message-header: "<SOLID:059DFF>%date% &elogs <SOLID:D2E60A>(Range: %range%):"
+#log-message-header: "<SOLID:059DFF>%date% &elogs <SOLID:D2E60A>(Range: %range%):" tadwadwa
 #log-message: "&8[<SOLID:D2E60A>%time%&8] <SOLID:E54A10>%killer% <SOLID:D2E60A>killed <SOLID:E54A10>%victim% <SOLID:D2E60A>in <SOLID:E54A10>%world% <SOLID:D2E60A>at <SOLID:E54A10>%location% <SOLID:059DFF>| <SOLID:D2E60A>New Wanted: <SOLID:E54A10>%wanted%"
 successfully-arrest: "<SOLID:60C924>The %target% was successfully arrested!"
 cant-arrest: "<SOLID:E54A10>You can't arrest this player!"
