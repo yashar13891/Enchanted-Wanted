@@ -16,7 +16,7 @@ public class MySQLManager implements DatabaseManager {
     private final Logger logger = EnchantedWanted.getPluginLogger();
 
     private final Cache<UUID, Integer> wantedCache = CacheBuilder.newBuilder()
-            .expireAfterWrite(10, TimeUnit.MINUTES)
+            .expireAfterWrite(1, TimeUnit.MINUTES)
             .build();
 
     private Connection getConnection() throws SQLException {
