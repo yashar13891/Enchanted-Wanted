@@ -8,13 +8,11 @@ public class PoliceAlertManager {
 
     private final Set<UUID> policeAlertEnabledPlayers = new HashSet<>();
 
-    public boolean togglePoliceAlert(UUID playerId) {
+    public void togglePoliceAlert(UUID playerId) {
         if (policeAlertEnabledPlayers.contains(playerId)) {
             policeAlertEnabledPlayers.remove(playerId);
-            return false;
         } else {
             policeAlertEnabledPlayers.add(playerId);
-            return true;
         }
     }
 
