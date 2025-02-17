@@ -1,22 +1,21 @@
 package org.yashar.enchantedWanted.managers;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class PoliceAlertManager {
+    private final Set<UUID> enabledAlerts = new HashSet<>();
 
-    private final Set<UUID> policeAlertEnabledPlayers = new HashSet<>();
-
-    public void togglePoliceAlert(UUID playerId) {
-        if (policeAlertEnabledPlayers.contains(playerId)) {
-            policeAlertEnabledPlayers.remove(playerId);
+    public boolean togglePoliceAlert(UUID playerId) {
+        if (enabledAlerts.contains(playerId)) {
+            enabledAlerts.remove(playerId);
+            return false;
         } else {
-            policeAlertEnabledPlayers.add(playerId);
+            enabledAlerts.add(playerId);
+            return true;
         }
     }
 
-    public boolean isPoliceAlertEnabled(UUID playerId) {
-        return policeAlertEnabledPlayers.contains(playerId);
+    public boolean isAlertsEnabled(UUID playerId) {
+        return enabledAlerts.contains(playerId);
     }
 }
