@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 public class WantedCommand implements TabExecutor {
     private final DatabaseManager database;
     private final PoliceAlertManager policeAlertManager;
+    private final Utils utils;
 
     private static final Map<String, String> COMMAND_PERMISSIONS = new HashMap<>();
     private static final String POLICE_ALERT_PERMISSION = "enchantedwanted.police.alerts";
@@ -54,6 +55,7 @@ public class WantedCommand implements TabExecutor {
     public WantedCommand(DatabaseManager database) {
         this.database = database;
         this.policeAlertManager = new PoliceAlertManager();
+        this.utils = new Utils(database,EnchantedWanted.getInstance());
     }
 
     @Override
@@ -182,6 +184,7 @@ public class WantedCommand implements TabExecutor {
     }
 
     private void handleGPS(Player player) {
+
         Player nearestWantedOpt = Bukkit.getOnlinePlayers().stream()
                 .filter(p -> !p.equals(player))
                 .filter(p -> p.getWorld().equals(player.getWorld()))
@@ -193,17 +196,17 @@ public class WantedCommand implements TabExecutor {
             return;
         }
 
-        Utils.startGPS(player.getUniqueId(), nearestWantedOpt.getUniqueId());
+        utils.startGPS(player.getUniqueId(), nearestWantedOpt.getUniqueId());
         MessageUtils.sendMessage(player, "<#ffd100>Tracking: " + nearestWantedOpt.getName());
     }
 
     private void handleStopGPS(Player player) {
-        Utils.stopGPS(player.getUniqueId());
+        utils.stopGPS(player.getUniqueId());
         MessageUtils.sendMessage(player, "<#ffd100>GPS tracking stopped.");
     }
 
     private void handleArrest(Player player) {
-        Utils.arrestPlayer(player.getUniqueId());
+        utils.arrestPlayer(player.getUniqueId());
         MessageUtils.sendMessage(player, "<#ffd100>Arrest process started!");
     }
 
