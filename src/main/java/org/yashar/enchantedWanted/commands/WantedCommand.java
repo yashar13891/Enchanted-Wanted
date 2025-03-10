@@ -182,20 +182,19 @@ public class WantedCommand implements TabExecutor {
     }
 
     private void handleGPS(Player player) {
-        Optional<? extends Player> nearestWantedOpt = Bukkit.getOnlinePlayers().stream()
+        Player nearestWantedOpt = Bukkit.getOnlinePlayers().stream()
                 .filter(p -> !p.equals(player))
                 .filter(p -> p.getWorld().equals(player.getWorld()))
                 .filter(p -> database.getWanted(p.getUniqueId()) > 0)
-                .min(Comparator.comparingDouble(p -> p.getLocation().distance(player.getLocation())));
+                .min(Comparator.comparingDouble(p -> p.getLocation().distance(player.getLocation()))).orElse(null);
 
-        if (nearestWantedOpt.isEmpty()) {
+        if (nearestWantedOpt == null) {
             MessageUtils.sendMessage(player, "<#e01400>No wanted players found in your world!");
             return;
         }
 
-        Player target = nearestWantedOpt.get();
-        Utils.startGPS(player.getUniqueId(), target.getUniqueId());
-        MessageUtils.sendMessage(player, "<#ffd100>Tracking: " + target.getName());
+        Utils.startGPS(player.getUniqueId(), nearestWantedOpt.getUniqueId());
+        MessageUtils.sendMessage(player, "<#ffd100>Tracking: " + nearestWantedOpt.getName());
     }
 
     private void handleStopGPS(Player player) {
@@ -211,8 +210,6 @@ public class WantedCommand implements TabExecutor {
     private void handleAdminReload(Player player) {
         EnchantedWanted.getInstance().saveConfig();
         EnchantedWanted.getInstance().reloadConfig();
-        database.saveCacheToDatabase();
-        database.disconnect();
         EnchantedWanted.getInstance().setupDatabase();
         MessageUtils.sendMessage(player, "<#ffd100>Plugin reloaded successfully!");
     }
