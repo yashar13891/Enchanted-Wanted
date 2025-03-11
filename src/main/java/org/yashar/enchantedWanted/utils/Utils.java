@@ -67,7 +67,6 @@ public class Utils {
         try {
             cuffem.getDragger().stopDragging(player);
         } catch (Dragger.NotBeingDraggedException ignored) {
-            // Player wasn't being dragged
         }
     }
 
