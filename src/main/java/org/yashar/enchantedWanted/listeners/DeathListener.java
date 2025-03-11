@@ -8,11 +8,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.yashar.enchantedWanted.EnchantedWanted;
-import org.yashar.enchantedWanted.events.WantedAddEvent;
 import org.yashar.enchantedWanted.storages.DatabaseManager;
-import org.yashar.enchantedWanted.utils.MessageUtils;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.yashar.enchantedWanted.utils.MessageUtils.sendMessage;
 
@@ -35,18 +34,18 @@ public class DeathListener implements Listener {
 
         int wanted = database.getWanted(killer.getUniqueId());
         database.addWanted(killer.getUniqueId(), 1);
+        executeWantedAddCommand(killer.getUniqueId());
         if (wanted != database.getWanted(killer.getUniqueId())) {
             sendMessage(killer, "<#ff5733>Hey! You've been added to the wanted list. Current Wanted: %Wanted%</#ff5733>"
                     .replace("%Wanted%", String.valueOf(database.getWanted(killer.getUniqueId()))));
             sendMessage(victim, "<#ff5733>You were killed by a wanted player!</#ff5733>");
 
-            Bukkit.getOnlinePlayers().forEach(player -> {
-                if (player.hasPermission("enchantedwanted.police.alerts")) {
-                    sendMessage(player, "&8[&1PoliceRadio&8] &fTamamie police ha player " + player.getName() + " yek wanted gereft");
-                }
-            });
+            Bukkit.getOnlinePlayers().stream()
+                    .filter(player -> player.hasPermission("enchantedwanted.police.alerts"))
+                    .forEach(player -> sendMessage(player, "&8[&1PoliceRadio&8] &fAll police officers, player " + player.getName() + " has received one wanted level")
+                    );
         } else {
-            sendMessage(killer, "<#ff5733>Shoma hich wantedi dar yaft nakardid");
+            sendMessage(killer, "<#ff5733>You didn't receive anything you wanted.");
         }
 
         executeKillCommands(killer, victim);
@@ -70,6 +69,21 @@ public class DeathListener implements Listener {
                 victem.performCommand(victimCommand);
             } else if (command.startsWith("[CONSOLE]")) {
                 String consoleCommand = command.replace("[CONSOLE] ", "").replace("%player%", killer.getName());
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), consoleCommand);
+            }
+        }
+    }
+
+    private void executeWantedAddCommand(UUID receiver) {
+        var player = Bukkit.getPlayer(receiver);
+        if (player == null) return;
+        List<String> commands = EnchantedWanted.getInstance().getConfig().getStringList("wanted-add-commands");
+        for (String command : commands) {
+            if (command.startsWith("[RECEIVER]")) {
+                String receiverCommand = command.replace("[RECEIVER] ", "");
+                player.performCommand(receiverCommand);
+            } else if (command.startsWith("[CONSOLE]")) {
+                String consoleCommand = command.replace("[CONSOLE] ", "");
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), consoleCommand);
             }
         }

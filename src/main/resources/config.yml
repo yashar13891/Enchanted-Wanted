@@ -9,8 +9,8 @@ kill-commands:
   - "[PLAYER] command"
   - "[CONSOLE] command"
 wanted-add-commands:
-  - ""
-  - ""
+  - "[CONSOLE] command"
+  - "[RECEIVER] command"
 wanted:
   max: 6
   filled: "&c★"
