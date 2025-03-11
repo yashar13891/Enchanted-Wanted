@@ -74,8 +74,4 @@ public class DeathListener implements Listener {
             }
         }
     }
-    @EventHandler
-    public void onWanted(WantedAddEvent e) {
-        e.setCancelled(true);
-    }
 }
