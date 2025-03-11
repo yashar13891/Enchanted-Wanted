@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.yashar.enchantedWanted.EnchantedWanted;
+import org.yashar.enchantedWanted.events.WantedAddEvent;
 import org.yashar.enchantedWanted.storages.DatabaseManager;
 import org.yashar.enchantedWanted.utils.MessageUtils;
 
@@ -72,5 +73,9 @@ public class DeathListener implements Listener {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), consoleCommand);
             }
         }
+    }
+    @EventHandler
+    public void onWanted(WantedAddEvent e) {
+        e.setCancelled(true);
     }
 }

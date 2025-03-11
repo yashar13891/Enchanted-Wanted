@@ -4,6 +4,8 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.bukkit.Bukkit;
 import org.yashar.enchantedWanted.EnchantedWanted;
+import org.yashar.enchantedWanted.events.WantedAddEvent;
+import org.yashar.enchantedWanted.events.WantedRemoveEvent;
 
 import java.sql.*;
 import java.util.UUID;
@@ -105,6 +107,8 @@ public class SQLiteManager implements DatabaseManager {
     public void removeWanted(UUID uuid, int amount) {
         if (amount < 1) return;
         setWanted(uuid, Math.max(0, getWanted(uuid) - amount));
+        WantedRemoveEvent wantedRemoveEvent = new WantedRemoveEvent(uuid);
+        Bukkit.getPluginManager().callEvent(wantedRemoveEvent);
     }
 
     @Override
@@ -112,6 +116,8 @@ public class SQLiteManager implements DatabaseManager {
         int maxWanted = EnchantedWanted.getInstance().getConfig().getInt("wanted.max", 6);
         if (level < 0) level = 0;
         if (level > maxWanted) level = maxWanted;
+        WantedAddEvent wantedAddEvent = new WantedAddEvent(uuid);
+        Bukkit.getPluginManager().callEvent(wantedAddEvent);
         wantedCache.put(uuid, level);
         int finalLevel = level;
         CompletableFuture.runAsync(() -> {

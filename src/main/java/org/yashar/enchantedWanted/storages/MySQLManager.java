@@ -4,6 +4,9 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.bukkit.Bukkit;
 import org.yashar.enchantedWanted.EnchantedWanted;
+import org.yashar.enchantedWanted.events.WantedAddEvent;
+import org.yashar.enchantedWanted.events.WantedRemoveEvent;
+import org.yashar.enchantedWanted.events.WantedSetEvent;
 
 import java.sql.*;
 import java.util.UUID;
@@ -101,6 +104,9 @@ public class MySQLManager implements DatabaseManager {
     @Override
     public void addWanted(UUID uuid, int amount) {
         if (amount < 1) return;
+        WantedAddEvent wantedAddEvent = new WantedAddEvent(uuid);
+        Bukkit.getPluginManager().callEvent(wantedAddEvent);
+        if (wantedAddEvent.isCancelled()) return;
         int maxWanted = EnchantedWanted.getInstance().getConfig().getInt("wanted.max", 6);
         setWanted(uuid, Math.min(maxWanted, getWanted(uuid) + amount));
         setWanted(uuid, getWanted(uuid) + amount);
@@ -109,6 +115,9 @@ public class MySQLManager implements DatabaseManager {
     @Override
     public void removeWanted(UUID uuid, int amount) {
         if (amount < 1) return;
+        WantedRemoveEvent wantedRemoveEvent = new WantedRemoveEvent(uuid);
+        Bukkit.getPluginManager().callEvent(wantedRemoveEvent);
+        if (wantedRemoveEvent.isCancelled()) return;
         setWanted(uuid, Math.max(0, getWanted(uuid) - amount));
     }
 
@@ -117,6 +126,9 @@ public class MySQLManager implements DatabaseManager {
         int maxWanted = EnchantedWanted.getInstance().getConfig().getInt("wanted.max", 6);
         if (level < 0) level = 0;
         if (level > maxWanted) level = maxWanted;
+        WantedSetEvent wantedSetEvent = new WantedSetEvent(uuid);
+        Bukkit.getPluginManager().callEvent(wantedSetEvent);
+        if (wantedSetEvent.isCancelled()) return;
         wantedCache.put(uuid, level);
         int finalLevel = level;
         CompletableFuture.runAsync(() -> {

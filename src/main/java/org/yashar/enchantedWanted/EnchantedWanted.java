@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import org.yashar.enchantedWanted.API.WantedPlayer;
 import org.yashar.enchantedWanted.commands.*;
 import org.yashar.enchantedWanted.listeners.*;
 import org.yashar.enchantedWanted.managers.*;
@@ -20,6 +21,7 @@ public final class EnchantedWanted extends JavaPlugin {
     private static EnchantedWanted plugin;
     private static Logger logger;
     private static DatabaseManager database;
+    private WantedPlayer wantedPlayer;
 
     public static EnchantedWanted getInstance() {
         return plugin;
@@ -31,6 +33,7 @@ public final class EnchantedWanted extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        this.wantedPlayer = new WantedPlayer(database);
         saveDefaultConfig();
         plugin = this;
         logger = getLogger();
@@ -103,6 +106,8 @@ public final class EnchantedWanted extends JavaPlugin {
             command.setPermission(permission);
         }
     }
-
+    public WantedPlayer getWantedPlayerAPI() {
+        return wantedPlayer;
+    }
 
 }

@@ -8,6 +8,9 @@ database:
 kill-commands:
   - "[PLAYER] command"
   - "[CONSOLE] command"
+wanted-add-commands:
+  - ""
+  - ""
 wanted:
   max: 6
   filled: "&c★"
