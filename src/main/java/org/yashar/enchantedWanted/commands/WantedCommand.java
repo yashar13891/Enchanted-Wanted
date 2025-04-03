@@ -35,6 +35,7 @@ public class WantedCommand implements TabExecutor {
             "<#ffd100>/wanted gps <#ff9b00>- Track nearest wanted player",
             "<#ffd100>/wanted gpsstop <#ff9b00>- Stop GPS tracking",
             "<#ffd100>/wanted arrest <#ff9b00>- Arrest a wanted player",
+            "<#ffd100>/wanted remove <player> <value> <#ff9b00>- Remove wanted points",
             "<#ffd100>/wanted reload <#ff9b00>- Reload plugin configuration",
             "<#ffd100>/wanted policealert <#ff9b00>- Toggle police alerts"
     );
@@ -48,6 +49,7 @@ public class WantedCommand implements TabExecutor {
         COMMAND_PERMISSIONS.put("gps", "enchantedwanted.gps");
         COMMAND_PERMISSIONS.put("gpsstop", "enchantedwanted.gps");
         COMMAND_PERMISSIONS.put("arrest", "enchantedwanted.arrest");
+        COMMAND_PERMISSIONS.put("remove", "enchantedwanted.remove");
         COMMAND_PERMISSIONS.put("reload", "enchantedwanted.command.reload");
         COMMAND_PERMISSIONS.put("policealert", "enchantedwanted.policealert");
     }
@@ -86,6 +88,7 @@ public class WantedCommand implements TabExecutor {
             case "gpsstop" -> handleStopGPS(player);
             case "arrest" -> handleArrest(player);
             case "reload" -> handleAdminReload(player);
+            case "remove" -> handleRemove(player, args);
             case "policealert" -> handlePoliceAlert(player);
             default -> sendHelpMessage(player);
         }
@@ -97,7 +100,25 @@ public class WantedCommand implements TabExecutor {
     }
 
     private void handleTop(Player player) {
-        WantedGUI.openWantedMenu(player, 0);
+        WantedGUI wantedGUI = new WantedGUI(database);
+        wantedGUI.openWantedMenu(player, 0);
+    }
+    private void handleRemove(Player player, String[] args) {
+        if (validateArgs(player, args, 3, "Usage: /wanted remove <player> <amount>")) return;
+        Player target = findPlayer(args[1]);
+        if (target == null) {
+            MessageUtils.sendMessage(player, "&cPlayer not found!");
+            return;
+        }
+        try {
+            int amount = Integer.parseInt(args[1]);
+            if (amount <= 0) {
+                MessageUtils.sendMessage(player, "&cAmount must be a positive number!");
+            }
+            database.removeWanted(target.getUniqueId(),amount);
+        } catch (NumberFormatException e) {
+            MessageUtils.sendMessage(player, "&cInvalid number!");
+        }
     }
 
     private void handleClear(Player player, String[] args) {
@@ -147,7 +168,6 @@ public class WantedCommand implements TabExecutor {
 
     private void handleAdd(Player player, String[] args) {
         if (validateArgs(player, args, 3, "Usage: /wanted add <player> <value>")) return;
-
         try {
             int value = Integer.parseInt(args[2]);
             if (value < 0) {

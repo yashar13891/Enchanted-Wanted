@@ -1,7 +1,7 @@
 package org.yashar.enchantedWanted.listeners;
 
+import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,11 +11,17 @@ import org.yashar.enchantedWanted.EnchantedWanted;
 import org.yashar.enchantedWanted.storages.DatabaseManager;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.yashar.enchantedWanted.utils.MessageUtils.sendMessage;
 
 public class DeathListener implements Listener {
+    private static final ItemStack TOTEM = Objects.requireNonNull(
+            XMaterial.TOTEM_OF_UNDYING.parseItem(),
+            "Totem material not found"
+    );
 
     private final DatabaseManager database;
 
@@ -28,64 +34,74 @@ public class DeathListener implements Listener {
         Player victim = e.getEntity();
         Player killer = victim.getKiller();
 
-        if (isHoldingTotem(victim) || killer == null || killer.equals(victim)) {
-            return;
-        }
+        if (isHoldingTotem(victim) || killer == null || killer.equals(victim)) return;
 
-        int wanted = database.getWanted(killer.getUniqueId());
+        int initialWanted = database.getWanted(killer.getUniqueId());
         database.addWanted(killer.getUniqueId(), 1);
-        executeWantedAddCommand(killer.getUniqueId());
-        if (wanted != database.getWanted(killer.getUniqueId())) {
-            sendMessage(killer, "<#ff5733>Hey! You've been added to the wanted list. Current Wanted: %Wanted%</#ff5733>"
-                    .replace("%Wanted%", String.valueOf(database.getWanted(killer.getUniqueId()))));
-            sendMessage(victim, "<#ff5733>You were killed by a wanted player!</#ff5733>");
+        int newWanted = database.getWanted(killer.getUniqueId());
 
+        if (newWanted > initialWanted) {
+            executeWantedAddCommand(killer.getUniqueId());
+            sendMessage(killer, "<#ff5733>Hey! You've been added to the wanted list. Current Wanted: " + newWanted);
+            sendMessage(victim, "<#ff5733>You were killed by a wanted player!");
+
+            String alertMsg = "&8[&1PoliceRadio&8] &fAll units, " + killer.getName() + " has increased to wanted level " + newWanted;
             Bukkit.getOnlinePlayers().stream()
-                    .filter(player -> player.hasPermission("enchantedwanted.police.alerts"))
-                    .forEach(player -> sendMessage(player, "&8[&1PoliceRadio&8] &fAll police officers, player " + player.getName() + " has received one wanted level")
-                    );
-        } else {
-            sendMessage(killer, "<#ff5733>You didn't receive anything you wanted.");
+                    .filter(p -> p.hasPermission("enchantedwanted.police.alerts"))
+                    .forEach(p -> sendMessage(p, alertMsg));
         }
 
         executeKillCommands(killer, victim);
     }
 
     private boolean isHoldingTotem(Player player) {
-        ItemStack totem = new ItemStack(Material.TOTEM_OF_UNDYING);
-        return player.getInventory().getItemInOffHand().equals(totem) ||
-                player.getInventory().getItemInMainHand().equals(totem);
+        return player.getInventory().getItemInOffHand().isSimilar(TOTEM) ||
+                player.getInventory().getItemInMainHand().isSimilar(TOTEM);
     }
 
-    private void executeKillCommands(Player killer, Player victem) {
+    private void executeKillCommands(Player killer, Player victim) {
         List<String> commands = EnchantedWanted.getInstance().getConfig().getStringList("kill-commands");
-        for (String command : commands) {
-            if (command.startsWith("[KILLER]")) {
-                String playerCommand = command.replace("[KILLER] ", "");
-                killer.performCommand(playerCommand);
+        commands.forEach(command -> processCommand(command, killer, victim));
+    }
 
+    private void processCommand(String command, Player killer, Player victim) {
+        try {
+            String processed = command
+                    .replace("%killer%", killer.getName())
+                    .replace("%victim%", victim.getName());
+
+            if (command.startsWith("[KILLER]")) {
+                killer.performCommand(processed.substring(8).trim());
             } else if (command.startsWith("[VICTIM]")) {
-                String victimCommand = command.replace("[VICTIM]", "");
-                victem.performCommand(victimCommand);
+                victim.performCommand(processed.substring(8).trim());
             } else if (command.startsWith("[CONSOLE]")) {
-                String consoleCommand = command.replace("[CONSOLE] ", "").replace("%player%", killer.getName());
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), consoleCommand);
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), processed.substring(9).trim());
             }
+        } catch (Exception ex) {
+            Bukkit.getLogger().severe("Error executing command: " + command);
+            ex.printStackTrace();
         }
     }
 
     private void executeWantedAddCommand(UUID receiver) {
-        var player = Bukkit.getPlayer(receiver);
-        if (player == null) return;
-        List<String> commands = EnchantedWanted.getInstance().getConfig().getStringList("wanted-add-commands");
-        for (String command : commands) {
+        Optional.ofNullable(Bukkit.getPlayer(receiver)).ifPresent(player -> {
+            List<String> commands = EnchantedWanted.getInstance().getConfig().getStringList("wanted-add-commands");
+            commands.forEach(command -> processWantedCommand(command, player));
+        });
+    }
+
+    private void processWantedCommand(String command, Player player) {
+        try {
+            String processed = command.replace("%player%", player.getName());
+
             if (command.startsWith("[RECEIVER]")) {
-                String receiverCommand = command.replace("[RECEIVER] ", "");
-                player.performCommand(receiverCommand);
+                player.performCommand(processed.substring(10).trim());
             } else if (command.startsWith("[CONSOLE]")) {
-                String consoleCommand = command.replace("[CONSOLE] ", "");
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), consoleCommand);
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), processed.substring(9).trim());
             }
+        } catch (Exception ex) {
+            Bukkit.getLogger().severe("Error executing wanted command: " + command);
+            ex.printStackTrace();
         }
     }
 }

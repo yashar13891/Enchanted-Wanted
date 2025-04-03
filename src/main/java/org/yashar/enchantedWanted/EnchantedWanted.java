@@ -1,6 +1,5 @@
 package org.yashar.enchantedWanted;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -35,6 +34,8 @@ public final class EnchantedWanted extends JavaPlugin {
     public void onEnable() {
         this.wantedPlayer = new WantedPlayer(database);
         saveDefaultConfig();
+        getConfig().options().copyDefaults(true);
+        saveConfig();
         plugin = this;
         logger = getLogger();
         BStatsManager.setup(this);
@@ -88,10 +89,11 @@ public final class EnchantedWanted extends JavaPlugin {
     }
 
     private void registerListeners() {
-        WantedGUI wantedGUI = new WantedGUI(database);
-        Bukkit.getPluginManager().registerEvents(new DeathListener(database), this);
-        Bukkit.getPluginManager().registerEvents(wantedGUI, this);
-        new PlaceHolderManager(database, this).register();
+        getServer().getPluginManager().registerEvents(new WantedGUI(database), this);
+        getServer().getPluginManager().registerEvents(new DeathListener(database), this);
+        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new PlaceHolderManager(database, this).register();
+        }
     }
 
     private void registerCommand(String name, CommandExecutor executor, String permission) {

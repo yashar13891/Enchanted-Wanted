@@ -1,108 +1,141 @@
 package org.yashar.enchantedWanted.menus;
 
+import com.cryptomorin.xseries.XMaterial;
+import com.cryptomorin.xseries.profiles.builder.XSkull;
+import com.cryptomorin.xseries.profiles.objects.Profileable;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-
 import org.yashar.enchantedWanted.storages.DatabaseManager;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class WantedGUI implements Listener {
-    private static DatabaseManager database;
-    private static final Map<UUID, Integer> playerPages = new HashMap<>();
+    private final DatabaseManager database;
+    private static final int ITEMS_PER_PAGE = 36;
+    private static final ItemStack GLASS_PANE = Objects.requireNonNull(
+            XMaterial.GRAY_STAINED_GLASS_PANE.parseItem(),
+            "Glass pane material not found"
+    );
+    private static final ItemStack NEXT_PAGE = createNavigationItem("§aɴᴇxᴛ »");
+    private static final ItemStack PREV_PAGE = createNavigationItem("« §cᴘʀᴇᴠɪᴏᴜs");
+    private final Map<UUID, Integer> playerPages = new ConcurrentHashMap<>();
 
     public WantedGUI(DatabaseManager database) {
-        WantedGUI.database = database;
+        this.database = database;
     }
 
-    public static void openWantedMenu(Player player, int page) {
-        int size = 54;
-        Inventory gui = Bukkit.createInventory(null, size, "§eᴡᴀɴᴛᴇᴅs - Page " + (page + 1));
+    public void openWantedMenu(Player player, int page) {
+        List<Player> wantedPlayers = getWantedPlayers();
+        int totalPages = Math.max(1, (int) Math.ceil((double) wantedPlayers.size() / ITEMS_PER_PAGE));
+        page = Math.max(0, Math.min(page, totalPages - 1));
 
-        ItemStack glass = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
-        for (int i = 0; i < size; i++) {
-            if (i < 9 || i >= size - 9 || i % 9 == 0 || (i + 1) % 9 == 0) {
-                gui.setItem(i, glass);
-            }
-        }
+        Inventory gui = Bukkit.createInventory(null, 54, "§eᴡᴀɴᴛᴇᴅs - Page " + (page + 1));
+        setupBorder(gui);
 
-        List<Integer> emptySlots = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            if (gui.getItem(i) == null) {
-                emptySlots.add(i);
-            }
-        }
-
-        List<Player> wantedPlayers = new ArrayList<>();
-        for (Player target : Bukkit.getOnlinePlayers()) {
-            if (database.getWanted(target.getUniqueId()) > 0) {
-                wantedPlayers.add(target);
-            }
-        }
-
-        int startIndex = page * emptySlots.size();
-        int endIndex = Math.min(startIndex + emptySlots.size(), wantedPlayers.size());
-        int index = 0;
+        int startIndex = page * ITEMS_PER_PAGE;
+        int endIndex = Math.min(startIndex + ITEMS_PER_PAGE, wantedPlayers.size());
 
         for (int i = startIndex; i < endIndex; i++) {
             Player target = wantedPlayers.get(i);
-            ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
-            SkullMeta meta = (SkullMeta) skull.getItemMeta();
-            assert meta != null;
-            meta.setOwningPlayer(target);
-            meta.setDisplayName("§c " + target.getName());
-            meta.setLore(List.of("§bᴡᴀɴᴛᴇᴅ ᴄᴏᴜɴᴛ§7: §4" + database.getWanted(target.getUniqueId())));
-            skull.setItemMeta(meta);
-            gui.setItem(emptySlots.get(index), skull);
-            index++;
+            Optional.ofNullable(createPlayerHead(target)).ifPresent(gui::addItem);
         }
 
-        if (endIndex < wantedPlayers.size()) {
-            ItemStack nextPage = new ItemStack(Material.ARROW);
-            ItemMeta meta = nextPage.getItemMeta();
-            assert meta != null;
-            meta.setDisplayName("§aɴᴇxᴛ »");
-            nextPage.setItemMeta(meta);
-            gui.setItem(size - 5, nextPage);
-        }
-
-        if (page > 0) {
-            ItemStack prevPage = new ItemStack(Material.ARROW);
-            ItemMeta meta = prevPage.getItemMeta();
-            assert meta != null;
-            meta.setDisplayName("« §cᴘʀᴇᴠɪᴏᴜs");
-            prevPage.setItemMeta(meta);
-            gui.setItem(size - 9, prevPage);
-        }
+        if (page < totalPages - 1) gui.setItem(53, NEXT_PAGE);
+        if (page > 0) gui.setItem(45, PREV_PAGE);
 
         playerPages.put(player.getUniqueId(), page);
         player.openInventory(gui);
     }
 
+    private List<Player> getWantedPlayers() {
+        List<Player> wanted = new ArrayList<>();
+        Bukkit.getOnlinePlayers().forEach(player -> {
+            if (database.getWanted(player.getUniqueId()) > 0) wanted.add(player);
+        });
+        wanted.sort(Comparator.comparingInt(p -> -database.getWanted(p.getUniqueId())));
+        return wanted;
+    }
+
+    private ItemStack createPlayerHead(Player target) {
+        ItemStack skull = XMaterial.PLAYER_HEAD.parseItem();
+        if (skull == null) return null;
+
+        try {
+            XSkull.of(skull).profile((Profileable) target).apply();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        ItemMeta meta = skull.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName("§c " + target.getName());
+            meta.setLore(Arrays.asList(
+                    "§bᴡᴀɴᴛᴇᴅ ᴄᴏᴜɴᴛ§7: §4" + database.getWanted(target.getUniqueId()),
+                    "§7Click for more info"
+            ));
+            skull.setItemMeta(meta);
+        }
+        return skull;
+    }
+
+    private static void setupBorder(Inventory gui) {
+        Arrays.stream(new int[]{0,1,2,3,4,5,6,7,8,45,46,47,48,49,50,51,52,53})
+                .forEach(slot -> gui.setItem(slot, GLASS_PANE));
+    }
+
+    private static ItemStack createNavigationItem(String name) {
+        ItemStack item = Optional.ofNullable(XMaterial.ARROW.parseItem())
+                .orElse(XMaterial.STONE.parseItem());
+        if (item == null) return null;
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(name);
+            item.setItemMeta(meta);
+        }
+        return item;
+    }
+
     @EventHandler
     public void onClick(InventoryClickEvent event) {
-        if (event.getView().getTitle().startsWith("§eᴡᴀɴᴛᴇᴅs")) {
-            event.setCancelled(true);
-            Player player = (Player) event.getWhoClicked();
-            UUID uuid = player.getUniqueId();
-            int page = playerPages.getOrDefault(uuid, 0);
+        if (!event.getView().getTitle().startsWith("§eᴡᴀɴᴛᴇᴅs")) return;
 
-            if (event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.ARROW) {
-                String name = Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getDisplayName();
-                if (name.contains("ɴᴇxᴛ")) {
-                    openWantedMenu(player, page + 1);
-                } else if (name.contains("ᴘʀᴇᴠɪᴏᴜs")) {
-                    openWantedMenu(player, page - 1);
-                }
-            }
+        event.setCancelled(true);
+
+        ItemStack clicked = event.getCurrentItem();
+        if (clicked == null || clicked.getType() == XMaterial.AIR.parseMaterial()) return;
+
+        Player player = (Player) event.getWhoClicked();
+        int currentPage = playerPages.getOrDefault(player.getUniqueId(), 0);
+
+        if (clicked.isSimilar(NEXT_PAGE)) {
+            openWantedMenu(player, currentPage + 1);
+        } else if (clicked.isSimilar(PREV_PAGE)) {
+            openWantedMenu(player, currentPage - 1);
+        }
+        else if (XMaterial.PLAYER_HEAD.isSimilar(clicked)) {
+            handlePlayerHeadClick(clicked, player);
         }
     }
+
+    private void handlePlayerHeadClick(ItemStack skull, Player clicker) {
+        ItemMeta meta = skull.getItemMeta();
+        if (meta == null) return;
+
+        String displayName = meta.getDisplayName();
+        if (displayName.startsWith("§c ")) {
+            String targetName = displayName.substring(3);
+            Player target = Bukkit.getPlayer(targetName);
+
+            if (target != null) {
+                clicker.performCommand("wanted gps " + targetName);
+            }
+            }
+        }
 }

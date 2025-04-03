@@ -60,14 +60,6 @@ public class Utils {
     }
 
     public void unCuff(UUID uuid) {
-        Player player = Bukkit.getPlayer(uuid);
-        if (player == null) return;
-
-        CuffEmPlugin cuffem = Objects.requireNonNull(Bukkit.getServicesManager().getRegistration(CuffEmPlugin.class)).getProvider();
-        try {
-            cuffem.getDragger().stopDragging(player);
-        } catch (Dragger.NotBeingDraggedException ignored) {
-        }
     }
 
     public void arrestPlayer(UUID uuid) {
@@ -81,8 +73,9 @@ public class Utils {
             plugin.getLogger().warning("Player not found for UUID: " + uuid);
             return;
         }
-
-        unCuff(uuid);
+        if (EnchantedWanted.getInstance().getServer().getPluginManager().getPlugin("CuffEm") != null) {
+            unCuff(uuid);
+        }
         int wantedLevel = database.getWanted(uuid);
         if (wantedLevel < 0) wantedLevel = 0;
 

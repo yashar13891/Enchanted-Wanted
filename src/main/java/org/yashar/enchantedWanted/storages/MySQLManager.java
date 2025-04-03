@@ -24,6 +24,7 @@ public class MySQLManager implements DatabaseManager {
 
     private Connection getConnection() throws SQLException {
         if (connection == null || connection.isClosed()) {
+            
             String host = EnchantedWanted.getInstance().getConfig().getString("database.host", "localhost");
             int port = EnchantedWanted.getInstance().getConfig().getInt("database.port", 3306);
             String database = EnchantedWanted.getInstance().getConfig().getString("database.name", "enchanted_wanted");
