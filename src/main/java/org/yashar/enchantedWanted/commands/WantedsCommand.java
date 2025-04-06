@@ -18,7 +18,8 @@ public class WantedsCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender,@NotNull Command cmd,@NotNull String label, String[] args) {
         if (args.length == 0) {
             Player player = (Player) sender;
-            if (player.hasPermission("enchantedwanted.command.wanteds")) {
+            boolean permission = player.hasPermission("enchantedwanted.command.wanteds");
+            if (permission) {
                 int wanted = database.getWanted(player.getUniqueId());
                 if (wanted > 0) {
                     MessageUtils.sendMessage(player,"&bYour wanted is " + database.getWanted(player.getUniqueId()));

@@ -12,7 +12,7 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 
     private final DatabaseManager database;
 
-    public PlaceHolderManager(@NotNull DatabaseManager database, @NotNull EnchantedWanted plugin) {
+    public PlaceHolderManager(@NotNull DatabaseManager database) {
         this.database = database;
     }
 

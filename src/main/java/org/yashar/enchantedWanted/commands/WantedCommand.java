@@ -12,6 +12,7 @@ import org.yashar.enchantedWanted.EnchantedWanted;
 import org.yashar.enchantedWanted.managers.PoliceAlertManager;
 import org.yashar.enchantedWanted.menus.WantedGUI;
 import org.yashar.enchantedWanted.storages.DatabaseManager;
+import org.yashar.enchantedWanted.utils.MainUtil;
 import org.yashar.enchantedWanted.utils.MessageUtils;
 import org.yashar.enchantedWanted.utils.Utils;
 
@@ -231,9 +232,10 @@ public class WantedCommand implements TabExecutor {
     }
 
     private void handleAdminReload(Player player) {
+        MainUtil mainUtil = new MainUtil(database);
         EnchantedWanted.getInstance().saveConfig();
         EnchantedWanted.getInstance().reloadConfig();
-        EnchantedWanted.getInstance().setupDatabase();
+        mainUtil.setupDatabase();
         MessageUtils.sendMessage(player, "<#ffd100>Plugin reloaded successfully!");
     }
 

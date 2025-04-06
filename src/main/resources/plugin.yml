@@ -2,16 +2,12 @@ name: EnchantedWanted
 version: '1.0'
 main: org.yashar.enchantedWanted.EnchantedWanted
 api-version: "1.13"
-load: POSTWORLD
 author: "IRDevs"
 description: 'Enchanted Wanted is a Plugin For GTA Servers'
 commands:
   wanted:
-    description: Aha
+    description: Manage Wanteds
   wanteds:
     description: With this command you can get your wanted
 softdepend:
   - PlaceholderAPI
-  - GPS
-  - CuffEm
-  - BetterJails
