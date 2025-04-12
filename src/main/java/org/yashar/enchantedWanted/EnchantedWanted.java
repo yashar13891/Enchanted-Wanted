@@ -6,6 +6,7 @@ import org.yashar.enchantedWanted.managers.*;
 import org.yashar.enchantedWanted.storages.*;
 import org.yashar.enchantedWanted.utils.ConfigUtil;
 import org.yashar.enchantedWanted.utils.MainUtil;
+import org.yashar.enchantedWanted.utils.PluginCheckUtil;
 
 import java.util.logging.Logger;
 
@@ -17,20 +18,22 @@ public final class EnchantedWanted extends JavaPlugin {
     private WantedPlayer wantedPlayer;
 
 
+
     @Override
     public void onEnable() {
+        PluginCheckUtil pluginCheckUtil = new PluginCheckUtil();
         plugin = this;
         logger = getLogger();
         MainUtil mainUtil = new MainUtil(database);
         this.wantedPlayer = new WantedPlayer(database);
-        ConfigUtil.loadConfig();
         saveDefaultConfig();
         BStatsManager.setup();
-
+        pluginCheckUtil.checkPlugin("PlaceholderAPI", getLogger());
         mainUtil.setupDatabase();
         mainUtil.checkDependency();
         mainUtil.registerListeners();
         mainUtil.registerCommands();
+
         logger.info("Enchanted Wanted Enabled! Thanks For Using (:");
     }
     @Override

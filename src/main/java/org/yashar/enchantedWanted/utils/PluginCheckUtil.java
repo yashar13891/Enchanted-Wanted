@@ -15,9 +15,9 @@ public class PluginCheckUtil {
     public void checkPlugin(String pluginName, Logger logger) {
         if (!isPluginInstalled(pluginName)) {
             logger.warning(pluginName + "is Not Installed!");
-            logger.warning("Install for smooth using...");
+            logger.warning("Will Be Some Options Not Work...");
         } else {
-            logger.info(pluginName + "Is Installed! Have Fun.");
+            logger.info(pluginName + "Is Installed! Check Completed.");
         }
     }
 }
