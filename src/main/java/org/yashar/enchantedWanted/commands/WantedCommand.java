@@ -12,7 +12,6 @@ import org.yashar.enchantedWanted.EnchantedWanted;
 import org.yashar.enchantedWanted.managers.PoliceAlertManager;
 import org.yashar.enchantedWanted.menus.WantedGUI;
 import org.yashar.enchantedWanted.storages.DatabaseManager;
-import org.yashar.enchantedWanted.utils.MainUtil;
 import org.yashar.enchantedWanted.utils.MessageUtils;
 import org.yashar.enchantedWanted.utils.Utils;
 
@@ -85,7 +84,7 @@ public class WantedCommand implements TabExecutor {
             case "set" -> handleSet(player, args);
             case "add" -> handleAdd(player, args);
             case "find" -> handleFind(player, args);
-            case "gps" -> handleGPS(player);
+            case "gps" -> handleGPS(player,args);
             case "gpsstop" -> handleStopGPS(player);
             case "arrest" -> handleArrest(player);
             case "reload" -> handleAdminReload(player);
@@ -115,6 +114,8 @@ public class WantedCommand implements TabExecutor {
             int amount = Integer.parseInt(args[1]);
             if (amount <= 0) {
                 MessageUtils.sendMessage(player, "&cAmount must be a positive number!");
+            } else {
+
             }
             database.removeWanted(target.getUniqueId(),amount);
         } catch (NumberFormatException e) {
@@ -204,21 +205,20 @@ public class WantedCommand implements TabExecutor {
         MessageUtils.sendMessage(player, "<#ff9b00>" + target.getName() + " <#ffd100>has " + wantedPoints + " wanted points");
     }
 
-    private void handleGPS(Player player) {
-
-        Player nearestWantedOpt = Bukkit.getOnlinePlayers().stream()
-                .filter(p -> !p.equals(player))
-                .filter(p -> p.getWorld().equals(player.getWorld()))
-                .filter(p -> database.getWanted(p.getUniqueId()) > 0)
-                .min(Comparator.comparingDouble(p -> p.getLocation().distance(player.getLocation()))).orElse(null);
-
-        if (nearestWantedOpt == null) {
-            MessageUtils.sendMessage(player, "<#e01400>No wanted players found in your world!");
+    private void handleGPS(Player player, String[] args) {
+        if (validateArgs(player, args, 2, "Usage: /wanted gps <player>")) return;
+        Player target = findPlayer(args[1]);
+        if (target == null) {
+            MessageUtils.sendMessage(player, "&cPlayer not found!");
+            return;
+        } else if (database.getWanted(target.getUniqueId()) == 0) {
+            MessageUtils.sendMessage(player, "&cNo Wanted found for this player!");
             return;
         }
 
-        utils.startGPS(player.getUniqueId(), nearestWantedOpt.getUniqueId());
-        MessageUtils.sendMessage(player, "<#ffd100>Tracking: " + nearestWantedOpt.getName());
+
+        utils.startGPS(player.getUniqueId(), target.getUniqueId());
+        MessageUtils.sendMessage(player, "<#ffd100>Tracking: " + target.getName());
     }
 
     private void handleStopGPS(Player player) {
@@ -227,15 +227,12 @@ public class WantedCommand implements TabExecutor {
     }
 
     private void handleArrest(Player player) {
-        utils.arrestPlayer(player.getUniqueId());
         MessageUtils.sendMessage(player, "<#ffd100>Arrest process started!");
     }
 
     private void handleAdminReload(Player player) {
-        MainUtil mainUtil = new MainUtil(database);
         EnchantedWanted.getInstance().saveConfig();
         EnchantedWanted.getInstance().reloadConfig();
-        mainUtil.setupDatabase();
         MessageUtils.sendMessage(player, "<#ffd100>Plugin reloaded successfully!");
     }
 
@@ -283,7 +280,7 @@ public class WantedCommand implements TabExecutor {
                     .forEach(suggestions::add);
         } else if (args.length == 2) {
             String subCmd = args[0].toLowerCase();
-            if (List.of("clear", "set", "add", "find").contains(subCmd)) {
+            if (List.of("clear", "set", "add", "find","gps").contains(subCmd)) {
                 suggestions.addAll(Bukkit.getOnlinePlayers().stream()
                         .map(Player::getName)
                         .toList());
@@ -291,7 +288,7 @@ public class WantedCommand implements TabExecutor {
         } else if (args.length == 3) {
             String subCmd = args[0].toLowerCase();
             if (List.of("set", "add").contains(subCmd)) {
-                suggestions.addAll(List.of("10", "20", "50"));
+                suggestions.addAll(List.of("1", "2", "3","4","5","6"));
             }
         }
 
