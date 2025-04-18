@@ -1,11 +1,21 @@
 package org.yashar.enchantedWanted;
 
+
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.yashar.enchantedWanted.API.WantedPlayer;
-import org.yashar.enchantedWanted.managers.*;
-import org.yashar.enchantedWanted.storages.*;
+import org.yashar.enchantedWanted.commands.WantedCommand;
+import org.yashar.enchantedWanted.commands.WantedsCommand;
+import org.yashar.enchantedWanted.listeners.DeathListener;
+import org.yashar.enchantedWanted.managers.BStatsManager;
+import org.yashar.enchantedWanted.managers.PlaceHolderManager;
+import org.yashar.enchantedWanted.menus.WantedGUI;
+import org.yashar.enchantedWanted.storages.DatabaseManager;
+import org.yashar.enchantedWanted.storages.MySQLManager;
+import org.yashar.enchantedWanted.storages.SQLiteManager;
 import org.yashar.enchantedWanted.utils.ConfigUtil;
-import org.yashar.enchantedWanted.utils.MainUtil;
 import org.yashar.enchantedWanted.utils.PluginCheckUtil;
 
 import java.util.logging.Logger;
@@ -18,22 +28,20 @@ public final class EnchantedWanted extends JavaPlugin {
     private WantedPlayer wantedPlayer;
 
 
-
     @Override
     public void onEnable() {
-        PluginCheckUtil pluginCheckUtil = new PluginCheckUtil();
         plugin = this;
         logger = getLogger();
-        MainUtil mainUtil = new MainUtil(database);
         this.wantedPlayer = new WantedPlayer(database);
+        getConfig().options().copyDefaults(true);
+        saveConfig();
         saveDefaultConfig();
         BStatsManager.setup();
-        pluginCheckUtil.checkPlugin("PlaceholderAPI", getLogger());
-        mainUtil.setupDatabase();
-        mainUtil.checkDependency();
-        mainUtil.registerListeners();
-        mainUtil.registerCommands();
 
+        setupDatabase();
+        checkDependency();
+        registerListeners();
+        registerCommands();
         logger.info("Enchanted Wanted Enabled! Thanks For Using (:");
     }
     @Override
@@ -51,5 +59,49 @@ public final class EnchantedWanted extends JavaPlugin {
 
     public static Logger getPluginLogger() {
         return logger;
+    }
+    public void setupDatabase() {
+        String databaseType = getConfig().getString("database.type", "sqlite").toLowerCase();
+
+        switch (databaseType) {
+            case "mysql":
+                database = new MySQLManager();
+                break;
+            case "sqlite":
+            default:
+                database = new SQLiteManager();
+                break;
+        }
+
+        database.connect();
+        if (database.isConnected()) {
+            database.createTable();
+            logger.info("[Database] Database connected and ready!");
+        } else {
+            logger.severe("[Database] Failed to connect to database!");
+            getServer().getPluginManager().disablePlugin(this);
+        }
+    }
+
+    public void registerCommands() {
+        getCommand("wanted").setExecutor(new WantedCommand(database));
+        getCommand("wanteds").setExecutor(new WantedsCommand(database));
+    }
+
+    public void checkDependency() {
+        PluginCheckUtil pluginCheckUtil = new PluginCheckUtil();
+        pluginCheckUtil.checkPlugin("PlaceholderAPI", logger);
+    }
+
+    public void registerListeners() {
+        getServer().getPluginManager().registerEvents(new WantedGUI(database), this);
+        getServer().getPluginManager().registerEvents(new DeathListener(database), this);
+        if (isPlaceHolderAPIEnabled()) {
+            new PlaceHolderManager(database).register();
+        }
+    }
+
+    public boolean isPlaceHolderAPIEnabled() {
+        return getServer().getPluginManager().getPlugin("PlaceholderAPI") != null;
     }
 }
