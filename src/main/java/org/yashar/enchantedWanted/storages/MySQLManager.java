@@ -110,7 +110,6 @@ public class MySQLManager implements DatabaseManager {
         if (wantedAddEvent.isCancelled()) return;
         int maxWanted = EnchantedWanted.getInstance().getConfig().getInt("wanted.max", 6);
         setWanted(uuid, Math.min(maxWanted, getWanted(uuid) + amount));
-        setWanted(uuid, getWanted(uuid) + amount);
     }
 
     @Override

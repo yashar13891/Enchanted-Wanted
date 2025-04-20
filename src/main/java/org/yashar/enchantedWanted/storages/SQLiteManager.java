@@ -100,8 +100,6 @@ public class SQLiteManager implements DatabaseManager {
         if (amount < 1) return;
         int maxWanted = EnchantedWanted.getInstance().getConfig().getInt("wanted.max", 6);
         setWanted(uuid, Math.min(maxWanted, getWanted(uuid) + amount));
-        logger.info("[DEBUG] addWanted called for " + uuid + " | amount: " + amount);
-        new Throwable("STACK TRACE - addWanted called").printStackTrace();
     }
 
 
@@ -122,7 +120,6 @@ public class SQLiteManager implements DatabaseManager {
         Bukkit.getPluginManager().callEvent(wantedAddEvent);
         wantedCache.put(uuid, level);
         int finalLevel = level;
-        logger.info("[DEBUG] setWanted: " + uuid + " → " + level);
         CompletableFuture.runAsync(() -> {
             String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, ?) ON CONFLICT(uuid) DO UPDATE SET wanted = ?;";
             String name = Bukkit.getOfflinePlayer(uuid).getName();
