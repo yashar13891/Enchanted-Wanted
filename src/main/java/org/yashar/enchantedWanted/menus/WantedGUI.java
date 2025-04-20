@@ -1,9 +1,7 @@
 package org.yashar.enchantedWanted.menus;
 
-import com.cryptomorin.xseries.XMaterial;
-import com.cryptomorin.xseries.profiles.builder.XSkull;
-import com.cryptomorin.xseries.profiles.objects.Profileable;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,10 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WantedGUI implements Listener {
     private final DatabaseManager database;
     private static final int ITEMS_PER_PAGE = 36;
-    private static final ItemStack GLASS_PANE = Objects.requireNonNull(
-            XMaterial.GRAY_STAINED_GLASS_PANE.parseItem(),
-            "Glass pane material not found"
-    );
+    private static final ItemStack GLASS_PANE = createItem(Material.GRAY_STAINED_GLASS_PANE, " ");
     private static final ItemStack NEXT_PAGE = createNavigationItem("§aɴᴇxᴛ »");
     private static final ItemStack PREV_PAGE = createNavigationItem("« §cᴘʀᴇᴠɪᴏᴜs");
     private final Map<UUID, Integer> playerPages = new ConcurrentHashMap<>();
@@ -44,7 +39,7 @@ public class WantedGUI implements Listener {
 
         for (int i = startIndex; i < endIndex; i++) {
             Player target = wantedPlayers.get(i);
-            Optional.ofNullable(createPlayerHead(target)).ifPresent(gui::addItem);
+            Optional.of(createPlayerHead(target)).ifPresent(gui::addItem);
         }
 
         if (page < totalPages - 1) gui.setItem(53, NEXT_PAGE);
@@ -64,14 +59,7 @@ public class WantedGUI implements Listener {
     }
 
     private ItemStack createPlayerHead(Player target) {
-        ItemStack skull = XMaterial.PLAYER_HEAD.parseItem();
-        if (skull == null) return null;
-
-        try {
-            XSkull.of(skull).profile((Profileable) target).apply();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
 
         ItemMeta meta = skull.getItemMeta();
         if (meta != null) {
@@ -91,9 +79,11 @@ public class WantedGUI implements Listener {
     }
 
     private static ItemStack createNavigationItem(String name) {
-        ItemStack item = Optional.ofNullable(XMaterial.ARROW.parseItem())
-                .orElse(XMaterial.STONE.parseItem());
-        if (item == null) return null;
+        return createItem(Material.ARROW, name);
+    }
+
+    private static ItemStack createItem(Material material, String name) {
+        ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(name);
@@ -109,7 +99,7 @@ public class WantedGUI implements Listener {
         event.setCancelled(true);
 
         ItemStack clicked = event.getCurrentItem();
-        if (clicked == null || clicked.getType() == XMaterial.AIR.parseMaterial()) return;
+        if (clicked == null || clicked.getType() == Material.AIR) return;
 
         Player player = (Player) event.getWhoClicked();
         int currentPage = playerPages.getOrDefault(player.getUniqueId(), 0);
@@ -118,8 +108,7 @@ public class WantedGUI implements Listener {
             openWantedMenu(player, currentPage + 1);
         } else if (clicked.isSimilar(PREV_PAGE)) {
             openWantedMenu(player, currentPage - 1);
-        }
-        else if (XMaterial.PLAYER_HEAD.isSimilar(clicked)) {
+        } else if (clicked.getType() == Material.PLAYER_HEAD) {
             handlePlayerHeadClick(clicked, player);
         }
     }
@@ -136,6 +125,6 @@ public class WantedGUI implements Listener {
             if (target != null) {
                 clicker.performCommand("wanted gps " + targetName);
             }
-            }
         }
+    }
 }
