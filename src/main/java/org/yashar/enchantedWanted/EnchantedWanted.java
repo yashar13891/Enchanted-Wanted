@@ -10,7 +10,6 @@ import org.yashar.enchantedWanted.commands.WantedCommand;
 import org.yashar.enchantedWanted.commands.WantedsCommand;
 import org.yashar.enchantedWanted.listeners.DeathListener;
 import org.yashar.enchantedWanted.managers.BStatsManager;
-import org.yashar.enchantedWanted.managers.DependencyDownloader;
 import org.yashar.enchantedWanted.managers.PlaceHolderManager;
 import org.yashar.enchantedWanted.menus.WantedGUI;
 import org.yashar.enchantedWanted.storages.DatabaseManager;
@@ -35,16 +34,6 @@ public final class EnchantedWanted extends JavaPlugin {
         logger = getLogger();
         this.wantedPlayer = new WantedPlayer(database);
         getConfig().options().copyDefaults(true);
-        try {
-            DependencyDownloader.load("io.projectreactor", "reactor-core", "3.5.13");
-            DependencyDownloader.load("com.google.guava", "guava", "33.0.0-jre");
-            DependencyDownloader.load("net.kyori", "adventure-text-minimessage", "4.14.0");
-            DependencyDownloader.load("com.github.cryptomorin", "XSeries", "13.0.0");
-        } catch (Exception e) {
-            getLogger().severe("Failed to load dependencies dynamically.");
-            e.printStackTrace();
-            getServer().getPluginManager().disablePlugin(this);
-        }
         saveConfig();
         saveDefaultConfig();
         BStatsManager.setup();
