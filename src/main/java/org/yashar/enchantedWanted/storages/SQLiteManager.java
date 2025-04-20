@@ -66,7 +66,6 @@ public class SQLiteManager implements DatabaseManager {
     public int getWanted(UUID uuid) {
         Integer cachedValue = wantedCache.getIfPresent(uuid);
         if (cachedValue != null) return cachedValue;
-
         String sql = "SELECT wanted FROM players WHERE uuid = ?;";
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setString(1, uuid.toString());
@@ -74,6 +73,7 @@ public class SQLiteManager implements DatabaseManager {
             if (rs.next()) {
                 int wanted = rs.getInt("wanted");
                 wantedCache.put(uuid, wanted);
+                logger.info("[DEBUG] getWanted: " + uuid + " → result: " + wanted);
                 return wanted;
             } else {
                 setWanted(uuid, 0);
@@ -83,6 +83,7 @@ public class SQLiteManager implements DatabaseManager {
             logger.severe("[Database] Error retrieving wanted level for UUID " + uuid + ": " + e.getMessage());
         }
         return 0;
+
     }
 
     @Override
@@ -99,7 +100,8 @@ public class SQLiteManager implements DatabaseManager {
         if (amount < 1) return;
         int maxWanted = EnchantedWanted.getInstance().getConfig().getInt("wanted.max", 6);
         setWanted(uuid, Math.min(maxWanted, getWanted(uuid) + amount));
-        setWanted(uuid, getWanted(uuid) + amount);
+        logger.info("[DEBUG] addWanted called for " + uuid + " | amount: " + amount);
+        new Throwable("STACK TRACE - addWanted called").printStackTrace();
     }
 
 
@@ -120,6 +122,7 @@ public class SQLiteManager implements DatabaseManager {
         Bukkit.getPluginManager().callEvent(wantedAddEvent);
         wantedCache.put(uuid, level);
         int finalLevel = level;
+        logger.info("[DEBUG] setWanted: " + uuid + " → " + level);
         CompletableFuture.runAsync(() -> {
             String sql = "INSERT INTO players (uuid, name, wanted) VALUES (?, ?, ?) ON CONFLICT(uuid) DO UPDATE SET wanted = ?;";
             String name = Bukkit.getOfflinePlayer(uuid).getName();
