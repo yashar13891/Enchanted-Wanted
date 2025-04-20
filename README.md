@@ -1,48 +1,90 @@
-# Wanted Plugin for Minecraft
+# 🚨 EnchantedWanted – GTA-Like Wanted System for Minecraft
 
-## 🚔 About
-**Wanted** is a custom Minecraft plugin that introduces a GTA-style wanted system. Players gain wanted levels (up to 6 stars ⭐) based on their actions, and police must chase them down. The system automatically decreases the wanted level if no police are nearby.
+**EnchantedWanted** brings the thrill of a GTA-style star-based wanted system to your Minecraft world. Whether you're running a roleplay server or just want some chaos, this plugin adds a whole new level of intensity and immersion.
 
-## ✨ Features
-- 🔹 **GTA-style wanted system** with up to 5 stars
-- 🔹 **Automatic wanted level decay** when no police are nearby (within 10 blocks)
-- 🔹 **Flashing star animation** for immersive gameplay
-- 🔹 **Configurable settings** to adjust police detection range, decay time, and more
-
-## 📥 Installation
-1. Download the latest release.
-2. Place the `.jar` file into your `plugins` folder.
-3. Restart your Minecraft server.
-
-## ⚙️ Configuration
-Modify the `config.yml` file to customize the plugin settings:
-```yaml
-wanted:
-  max_stars: 6
-  decay_radius: 10 # Blocks away from police for wanted level to decrease
-  decay_time: 30 # Seconds before one star is removed
-  flashing_animation: true
-```
-
-## 🎮 Commands & Permissions
-### Commands
-| Command | Description |
-|---------|-------------|
-| `/wanted` | Displays the current wanted level |
-| `/wanted top` | Open Gui Menu For Wanteds |
-| `/wanted set <player>` | Set a Player Wanted |
-| `/wanted add <player>` | Add Wanted To a Player |
-| `/wanted clear <player>` | Clears a player's wanted level |
-
-### Permissions
-| Permission | Description |
-|------------|-------------|
-| `ewanted.use` | Allows players to view their wanted level |
-| `ewanted.admin` | Allows admins to clear wanted levels |
-
-## 📢 Support & Contributions
-Feel free to report issues or suggest features in the [Issues](https://discord.gg/dJ8exMjuKe) section. Contributions are welcome!
+> ⚠️ **This is a beta release!**  
+> Please report any bugs, glitches, or suggestions in our [Discord server](https://discord.gg/dJ8exMjuKe). Your feedback helps shape the final version!
 
 ---
-⭐ **Stay out of trouble... or don't!** 😈
 
+## ✨ Key Features
+
+- ⭐ **Up to 6 Wanted Stars**  
+  Inspired by the GTA series. Each star level increases the “threat level” with glowing animations.
+
+- ⚙️ **Clean & Simple Configuration**  
+  Easy to read and customize. No unnecessary clutter.
+
+- 🖼️ **Built-in GUI System**  
+  A polished, player-friendly GUI shows current wanted levels and useful info. Layouts and titles are customizable.
+
+- 💾 **Flexible Data Storage**  
+  - SQLite (default)  
+  - MySQL (for large networks)  
+  Optimized to handle 500+ players on MySQL with no performance drop.
+
+- ⚡ **High Performance**  
+  Asynchronous tasks and lightweight code ensure lag-free performance.
+
+- 🔌 **Plug & Play Setup**  
+  Drop the plugin into your `plugins/` folder and start the server. Default config included. Setup takes under 2 minutes.
+
+- 🧩 **PlaceholderAPI Support**  
+  Display wanted levels anywhere using:
+  - `%ew_wanted%`
+  - `%ew_formatted_wanted%`
+
+---
+
+## ✅ Compatibility
+
+- Supports **Minecraft 1.12 – 1.21**  
+- Tested on **Spigot**, **Paper**, and **Purpur**
+
+---
+
+## 🚧 Coming Soon
+
+- 🔗 Police plugin integrations  
+- 🎯 Bounty system addon  
+- 🌐 Web-based wanted dashboard (beta)
+
+---
+
+## 🧪 Beta Notice
+
+While fully usable and stable, this plugin is still in active beta. We recommend:
+
+- Joining our [Discord](https://discord.gg/dJ8exMjuKe) to share feedback  
+- Reporting bugs or unusual behavior  
+- Suggesting features you'd love to see
+
+---
+
+## 📜 Commands & Permissions
+
+> All commands use `/wanted` as the base.
+
+| Command                      | Permission                        | Description                            |
+|-----------------------------|------------------------------------|----------------------------------------|
+| `/wanted top`               | `enchantedwanted.top`             | View top wanted players                |
+| `/wanted clear <player>`    | `enchantedwanted.clear`           | Clear a player’s wanted level          |
+| `/wanted set <player> <n>`  | `enchantedwanted.set`             | Set a player’s wanted level            |
+| `/wanted add <player> <n>`  | `enchantedwanted.add`             | Add wanted stars to a player           |
+| `/wanted find <player>`     | `enchantedwanted.find`            | Locate a wanted player                 |
+| `/wanted gps <player>`      | `enchantedwanted.gps`             | Start GPS tracking for a player        |
+| `/wanted gpsstop`           | `enchantedwanted.gps`             | Stop GPS tracking                      |
+| `/ew remove <player> <n>`   | `enchantedwanted.remove`          | Remove stars from a player             |
+| `/wanted reload`            | `enchantedwanted.command.reload`  | Reload plugin configs                  |
+| `/wanted policealert`       | `enchantedwanted.policealert`     | Alert nearby police of a situation     |
+
+---
+
+## 🙋 Need Help?
+
+We're here to help! Reach out anytime on our [Discord server](https://discord.gg/dJ8exMjuKe).  
+Check out plugin stats on **[bStats](https://bstats.org/plugin/bukkit/Enchanted%20Wanted/24710)**.
+
+---
+
+### 🎮 Download EnchantedWanted today and bring law and chaos to your Minecraft server!
