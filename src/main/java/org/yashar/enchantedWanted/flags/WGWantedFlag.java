@@ -1,1 +1,0 @@
-package org.yashar.enchantedWanted.flags;

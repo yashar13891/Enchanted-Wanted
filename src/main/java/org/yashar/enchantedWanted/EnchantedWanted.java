@@ -1,13 +1,9 @@
 package org.yashar.enchantedWanted;
 
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.yashar.enchantedWanted.API.WantedPlayer;
 import org.yashar.enchantedWanted.commands.WantedCommand;
-import org.yashar.enchantedWanted.commands.WantedsCommand;
 import org.yashar.enchantedWanted.listeners.DeathListener;
 import org.yashar.enchantedWanted.managers.BStatsManager;
 import org.yashar.enchantedWanted.managers.PlaceHolderManager;
@@ -15,9 +11,9 @@ import org.yashar.enchantedWanted.menus.WantedGUI;
 import org.yashar.enchantedWanted.storages.DatabaseManager;
 import org.yashar.enchantedWanted.storages.MySQLManager;
 import org.yashar.enchantedWanted.storages.SQLiteManager;
-import org.yashar.enchantedWanted.utils.ConfigUtil;
 import org.yashar.enchantedWanted.utils.PluginCheckUtil;
 
+import java.util.Objects;
 import java.util.logging.Logger;
 
 public final class EnchantedWanted extends JavaPlugin {
@@ -37,7 +33,6 @@ public final class EnchantedWanted extends JavaPlugin {
         saveConfig();
         saveDefaultConfig();
         BStatsManager.setup();
-
         setupDatabase();
         checkDependency();
         registerListeners();
@@ -84,8 +79,7 @@ public final class EnchantedWanted extends JavaPlugin {
     }
 
     public void registerCommands() {
-        getCommand("wanted").setExecutor(new WantedCommand(database));
-        getCommand("wanteds").setExecutor(new WantedsCommand(database));
+        Objects.requireNonNull(getCommand("wanted")).setExecutor(new WantedCommand(database));
     }
 
     public void checkDependency() {

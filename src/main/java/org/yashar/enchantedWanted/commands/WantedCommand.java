@@ -22,10 +22,13 @@ public class WantedCommand implements TabExecutor {
     private final DatabaseManager database;
     private final PoliceAlertManager policeAlertManager;
     private final Utils utils;
-
+    String prefix = "&8[&eEW&8]";
     private static final Map<String, String> COMMAND_PERMISSIONS = new HashMap<>();
     private static final String POLICE_ALERT_PERMISSION = "enchantedwanted.police.alerts";
     private static final String HELP_MESSAGE = String.join("\n",
+            "<#ff0000>!!! This Is Beta Version if you found a bug Ticket on Discord !!!",
+                            "https://discord.gg/dJ8exMjuKe",
+                            "Enchanted Wanted Plugin Command Info",
             "<#555555>▼ Wanted Commands ▼",
             "<#ffd100>/wanted top <#ff9b00>- Show top wanted players",
             "<#ffd100>/wanted clear <player> <#ff9b00>- Clear wanted points",
@@ -48,7 +51,6 @@ public class WantedCommand implements TabExecutor {
         COMMAND_PERMISSIONS.put("find", "enchantedwanted.find");
         COMMAND_PERMISSIONS.put("gps", "enchantedwanted.gps");
         COMMAND_PERMISSIONS.put("gpsstop", "enchantedwanted.gps");
-        COMMAND_PERMISSIONS.put("arrest", "enchantedwanted.arrest");
         COMMAND_PERMISSIONS.put("remove", "enchantedwanted.remove");
         COMMAND_PERMISSIONS.put("reload", "enchantedwanted.command.reload");
         COMMAND_PERMISSIONS.put("policealert", "enchantedwanted.policealert");
@@ -74,7 +76,7 @@ public class WantedCommand implements TabExecutor {
 
         String subCmd = args[0].toLowerCase();
         if (!hasPermission(player, subCmd)) {
-            MessageUtils.sendMessage(player, "&cYou don't have permission!");
+            MessageUtils.sendMessage(player, prefix + "&cYou don't have permission!");
             return true;
         }
 
@@ -86,7 +88,6 @@ public class WantedCommand implements TabExecutor {
             case "find" -> handleFind(player, args);
             case "gps" -> handleGPS(player,args);
             case "gpsstop" -> handleStopGPS(player);
-            case "arrest" -> handleArrest(player);
             case "reload" -> handleAdminReload(player);
             case "remove" -> handleRemove(player, args);
             case "policealert" -> handlePoliceAlert(player);
@@ -104,142 +105,142 @@ public class WantedCommand implements TabExecutor {
         wantedGUI.openWantedMenu(player, 0);
     }
     private void handleRemove(Player player, String[] args) {
-        if (validateArgs(player, args, 3, "Usage: /wanted remove <player> <amount>")) return;
+        if (validateArgs(player, args, 3, prefix + "&rUsage: /wanted remove <player> <amount>")) return;
         Player target = findPlayer(args[1]);
         if (target == null) {
-            MessageUtils.sendMessage(player, "&cPlayer not found!");
+            MessageUtils.sendMessage(player, prefix + "&cPlayer not found!");
             return;
         }
         try {
             int amount = Integer.parseInt(args[1]);
             if (amount <= 0) {
-                MessageUtils.sendMessage(player, "&cAmount must be a positive number!");
+                MessageUtils.sendMessage(player, prefix + "&cAmount must be a positive number!");
             } else {
 
             }
             database.removeWanted(target.getUniqueId(),amount);
         } catch (NumberFormatException e) {
-            MessageUtils.sendMessage(player, "&cInvalid number!");
+            MessageUtils.sendMessage(player, prefix + "&cInvalid number!");
         }
     }
 
     private void handleClear(Player player, String[] args) {
-        if (validateArgs(player, args, 2, "Usage: /wanted clear <player>")) return;
+        if (validateArgs(player, args, 2, prefix + "&rUsage: /wanted clear <player>")) return;
 
         Player target = findPlayer(args[1]);
         if (target == null) {
-            MessageUtils.sendMessage(player, "&cPlayer not found!");
+            MessageUtils.sendMessage(player, prefix + "&cPlayer not found!");
             return;
         }
 
         int currentPoints = database.getWanted(target.getUniqueId());
         if (currentPoints == 0) {
-            MessageUtils.sendMessage(player, "<#ff9b00>" + target.getName() + " <#ffd100>doesn't have any wanted points!");
+            MessageUtils.sendMessage(player, prefix + "<#ff9b00>" + target.getName() + " <#ffd100>doesn't have any wanted points!");
             return;
         }
 
         database.setWanted(target.getUniqueId(), 0);
-        MessageUtils.sendMessage(player, "<#ffd100>Cleared <#ff9b00>" + target.getName() + "'s <#ffd100>wanted points!");
-        sendPoliceAlert(String.format("Wanted player <#ff9b00>%s <#ffd100>has been cleared by <#ff9b00>%s",
+        MessageUtils.sendMessage(player, prefix + "<#ffd100>Cleared <#ff9b00>" + target.getName() + "'s <#ffd100>wanted points!");
+        sendPoliceAlert(String.format(prefix + "<#ffd100>Wanted player <#ff9b00>%s <#ffd100>has been cleared by <#ff9b00>%s",
                 target.getName(), player.getName()));
     }
 
     private void handleSet(Player player, String[] args) {
-        if (validateArgs(player, args, 3, "Usage: /wanted set <player> <value>")) return;
+        if (validateArgs(player, args, 3, prefix + "&rUsage: /wanted set <player> <value>")) return;
         int value = Integer.parseInt(args[2]);
         try {
             if (value < 0) {
-                MessageUtils.sendMessage(player, "<#e01400>Value cannot be negative!");
+                MessageUtils.sendMessage(player, prefix + "<#e01400>Value cannot be negative!");
                 return;
             }
 
             Player target = findPlayer(args[1]);
             if (target == null) {
-                MessageUtils.sendMessage(player, "&cPlayer not found!");
+                MessageUtils.sendMessage(player, prefix + "&cPlayer not found!");
                 return;
             }
 
             database.setWanted(target.getUniqueId(), value);
-            MessageUtils.sendMessage(player, "<#ffd100>Set <#ff9b00>" + target.getName() + "'s <#ffd100>wanted points to " + value);
-            sendPoliceAlert(String.format("Wanted player <#ff9b00>%s <#ffd100>has been set to <#ff9b00>%d <#ffd100>by <#ff9b00>%s",
+            MessageUtils.sendMessage(player, prefix + "<#ffd100>Set <#ff9b00>" + target.getName() + "'s <#ffd100>wanted points to " + value);
+            sendPoliceAlert(String.format(prefix + "<#ffd100>Wanted player <#ff9b00>%s <#ffd100>has been set to <#ff9b00>%d <#ffd100>by <#ff9b00>%s",
                     target.getName(), value, player.getName()));
         } catch (NumberFormatException e) {
-            MessageUtils.sendMessage(player, "<#e01400>Invalid number format!");
+            MessageUtils.sendMessage(player, prefix + "<#e01400>Invalid number format!");
         }
     }
 
     private void handleAdd(Player player, String[] args) {
-        if (validateArgs(player, args, 3, "Usage: /wanted add <player> <value>")) return;
+        if (validateArgs(player, args, 3, prefix + "&rUsage: /wanted add <player> <value>")) return;
         try {
             int value = Integer.parseInt(args[2]);
             if (value < 0) {
-                MessageUtils.sendMessage(player, "<#e01400>Value cannot be negative!");
+                MessageUtils.sendMessage(player, prefix + "<#e01400>Value cannot be negative!");
                 return;
             }
 
             Player target = findPlayer(args[1]);
             if (target == null) {
-                MessageUtils.sendMessage(player, "&cPlayer not found!");
+                MessageUtils.sendMessage(player, prefix + "&cPlayer not found!");
                 return;
             }
 
             database.addWanted(target.getUniqueId(), value);
-            MessageUtils.sendMessage(player, "<#ffd100>Added <#ff9b00>" + value + " <#ffd100>wanted points to " + target.getName());
-            sendPoliceAlert(String.format("Wanted player <#ff9b00>%s <#ffd100>has increased by <#ff9b00>%d <#ffd100>wanted points by <#ff9b00>%s",
+            MessageUtils.sendMessage(player, prefix + "<#ffd100>Added <#ff9b00>" + value + " <#ffd100>wanted points to " + target.getName());
+            sendPoliceAlert(String.format(prefix + "<#ffd100>Wanted player <#ff9b00>%s <#ffd100>has increased by <#ff9b00>%d <#ffd100>wanted points by <#ff9b00>%s",
                     target.getName(), value, player.getName()));
         } catch (NumberFormatException e) {
-            MessageUtils.sendMessage(player, "<#e01400>Invalid number format!");
+            MessageUtils.sendMessage(player, prefix + "<#e01400>Invalid number format!");
         }
     }
 
     private void handleFind(Player player, String[] args) {
-        if (validateArgs(player, args, 2, "Usage: /wanted find <player>")) return;
+        if (validateArgs(player, args, 2, prefix + "&rUsage: /wanted find <player>")) return;
 
         Player target = findPlayer(args[1]);
         if (target == null) {
-            MessageUtils.sendMessage(player, "&cPlayer not found!");
+            MessageUtils.sendMessage(player, prefix + "&cPlayer not found!");
             return;
         }
 
         int wantedPoints = database.getWanted(target.getUniqueId());
-        MessageUtils.sendMessage(player, "<#ff9b00>" + target.getName() + " <#ffd100>has " + wantedPoints + " wanted points");
+        MessageUtils.sendMessage(player, prefix + "<#ff9b00>" + target.getName() + " <#ffd100>has " + wantedPoints + " wanted points");
     }
 
     private void handleGPS(Player player, String[] args) {
-        if (validateArgs(player, args, 2, "Usage: /wanted gps <player>")) return;
+        if (validateArgs(player, args, 2, prefix + "&rUsage: /wanted gps <player>")) return;
         Player target = findPlayer(args[1]);
         if (target == null) {
-            MessageUtils.sendMessage(player, "&cPlayer not found!");
+            MessageUtils.sendMessage(player, prefix + "&cPlayer not found!");
             return;
         } else if (database.getWanted(target.getUniqueId()) == 0) {
-            MessageUtils.sendMessage(player, "&cNo Wanted found for this player!");
+            MessageUtils.sendMessage(player, prefix + "&cNo Wanted found for this player!");
             return;
         }
 
 
         utils.startGPS(player.getUniqueId(), target.getUniqueId());
-        MessageUtils.sendMessage(player, "<#ffd100>Tracking: " + target.getName());
+        MessageUtils.sendMessage(player, prefix + "<#ffd100>Tracking: " + target.getName());
     }
 
     private void handleStopGPS(Player player) {
         utils.stopGPS(player.getUniqueId());
-        MessageUtils.sendMessage(player, "<#ffd100>GPS tracking stopped.");
+        MessageUtils.sendMessage(player, prefix + "<#ffd100>GPS tracking stopped.");
     }
 
     private void handleArrest(Player player) {
-        MessageUtils.sendMessage(player, "<#ffd100>Arrest process started!");
+        MessageUtils.sendMessage(player, prefix + "<#ffd100>Arrest process started!");
     }
 
     private void handleAdminReload(Player player) {
         EnchantedWanted.getInstance().saveConfig();
         EnchantedWanted.getInstance().reloadConfig();
-        MessageUtils.sendMessage(player, "<#ffd100>Plugin reloaded successfully!");
+        MessageUtils.sendMessage(player, prefix + "<#ffd100>Plugin reloaded successfully!");
     }
 
     private void handlePoliceAlert(Player player) {
         boolean newState = policeAlertManager.togglePoliceAlert(player.getUniqueId());
-        String state = newState ? "<#00ff00>ENABLED" : "<#ff0000>DISABLED";
-        MessageUtils.sendMessage(player, "<#ffd100>Police alerts: " + state);
+        String state = newState ? prefix + "<#00ff00>ENABLED" : "<#ff0000>DISABLED";
+        MessageUtils.sendMessage(player, prefix + "<#ffd100>Police alerts: " + state);
     }
 
     private Player findPlayer(String name) {
@@ -251,7 +252,7 @@ public class WantedCommand implements TabExecutor {
 
     private boolean validateArgs(Player player, String[] args, int required, String usage) {
         if (args.length < required) {
-            MessageUtils.sendMessage(player, "<#e01400>" + usage);
+            MessageUtils.sendMessage(player, prefix + "<#e01400>" + usage);
             return true;
         }
         return false;
@@ -261,7 +262,7 @@ public class WantedCommand implements TabExecutor {
         Bukkit.getOnlinePlayers().stream()
                 .filter(p -> p.hasPermission(POLICE_ALERT_PERMISSION))
                 .filter(p -> policeAlertManager.isAlertsEnabled(p.getUniqueId()))
-                .forEach(p -> MessageUtils.sendMessage(p, "<#8a2be2>[PoliceRadio] <#ffd700>" + message));
+                .forEach(p -> MessageUtils.sendMessage(p, prefix + "<#8a2be2>[PoliceRadio] <#ffd700>" + message));
     }
 
     private void sendHelpMessage(Player player) {

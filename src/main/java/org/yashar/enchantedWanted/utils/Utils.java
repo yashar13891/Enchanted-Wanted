@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Utils {
     private static final long GPS_UPDATE_INTERVAL = 20L; // 1 second
     private static final double MAX_TRACKING_DISTANCE = 10000.0;
+    String prefix = "&8[&eEW&8]";
 
     private final DatabaseManager database;
     private final EnchantedWanted plugin;
@@ -36,7 +37,7 @@ public class Utils {
 
         Player wanted = Bukkit.getPlayer(wantedUUID);
         if (wanted == null || !wanted.isOnline()) {
-            police.sendMessage("§cTarget is offline.");
+            police.sendMessage(prefix + "§cTarget is offline.");
             return;
         }
 
@@ -73,7 +74,7 @@ public class Utils {
 
         private boolean validatePlayers() {
             if (!police.isOnline() || !target.isOnline()) {
-                cleanup("§cTarget went offline.");
+                cleanup(prefix + "§cTarget went offline.");
                 return false;
             }
 
@@ -86,14 +87,14 @@ public class Utils {
             Location targetLoc = target.getLocation();
 
             if (policeLoc.getWorld() != targetLoc.getWorld()) {
-                cleanup("§cTarget in another world.");
+                cleanup(prefix + "§cTarget in another world.");
                 return;
             }
 
             Vector toTarget = targetLoc.toVector().subtract(policeLoc.toVector());
             double distance = Math.min(toTarget.length(), MAX_TRACKING_DISTANCE);
 
-            bossBar.setTitle(String.format("§aDistance: §f§l%.1f blocks", distance));
+            bossBar.setTitle(String.format("§aDistance: §b blocks", distance));
             bossBar.setProgress(distance / MAX_TRACKING_DISTANCE);
         }
 

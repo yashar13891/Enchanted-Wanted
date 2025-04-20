@@ -19,6 +19,7 @@ import java.util.UUID;
 import static org.yashar.enchantedWanted.utils.MessageUtils.sendMessage;
 
 public class DeathListener implements Listener {
+    String prefix = "&8[&eEW&8]";
     private static final ItemStack TOTEM = Objects.requireNonNull(
             XMaterial.TOTEM_OF_UNDYING.parseItem(),
             "Totem material not found"
@@ -43,10 +44,10 @@ public class DeathListener implements Listener {
 
         if (newWanted > initialWanted) {
             executeWantedAddCommand(killer.getUniqueId());
-            sendMessage(killer, "<#ff5733>Hey! You've been added to the wanted list. Current Wanted: " + newWanted);
-            sendMessage(victim, "<#ff5733>You were killed by a wanted player!");
+            sendMessage(killer, prefix + "<#ff5733>Hey! You've been added to the wanted list. Current Wanted: " + newWanted);
+            sendMessage(victim, prefix + "<#ff5733>You were killed by a wanted player!");
 
-            String alertMsg = "&8[&1PoliceRadio&8] &fAll units, " + killer.getName() + " has increased to wanted level " + newWanted;
+            String alertMsg = prefix + "&8[&1PoliceRadio&8] &fAll units, " + killer.getName() + " has increased to wanted level " + newWanted;
             PoliceAlertManager policeAlertManager = new PoliceAlertManager();
             Bukkit.getOnlinePlayers().stream()
                     .filter(p -> p.hasPermission("enchantedwanted.police.alerts"))
