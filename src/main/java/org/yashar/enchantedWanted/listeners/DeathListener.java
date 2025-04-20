@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.yashar.enchantedWanted.EnchantedWanted;
+import org.yashar.enchantedWanted.managers.PoliceAlertManager;
 import org.yashar.enchantedWanted.storages.DatabaseManager;
 
 import java.util.List;
@@ -46,8 +47,10 @@ public class DeathListener implements Listener {
             sendMessage(victim, "<#ff5733>You were killed by a wanted player!");
 
             String alertMsg = "&8[&1PoliceRadio&8] &fAll units, " + killer.getName() + " has increased to wanted level " + newWanted;
+            PoliceAlertManager policeAlertManager = new PoliceAlertManager();
             Bukkit.getOnlinePlayers().stream()
                     .filter(p -> p.hasPermission("enchantedwanted.police.alerts"))
+                    .filter(p -> policeAlertManager.isAlertsEnabled(p.getUniqueId()))
                     .forEach(p -> sendMessage(p, alertMsg));
         }
 
