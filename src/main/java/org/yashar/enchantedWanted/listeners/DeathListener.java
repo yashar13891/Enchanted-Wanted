@@ -1,7 +1,7 @@
 package org.yashar.enchantedWanted.listeners;
 
-import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,7 +12,6 @@ import org.yashar.enchantedWanted.managers.PoliceAlertManager;
 import org.yashar.enchantedWanted.storages.DatabaseManager;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,10 +19,7 @@ import static org.yashar.enchantedWanted.utils.MessageUtils.sendMessage;
 
 public class DeathListener implements Listener {
     String prefix = "&8[&eEW&8]";
-    private static final ItemStack TOTEM = Objects.requireNonNull(
-            XMaterial.TOTEM_OF_UNDYING.parseItem(),
-            "Totem material not found"
-    );
+    private static final ItemStack TOTEM = new ItemStack(Material.TOTEM_OF_UNDYING);
 
     private final DatabaseManager database;
 
