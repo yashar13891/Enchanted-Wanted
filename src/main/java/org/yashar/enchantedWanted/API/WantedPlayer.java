@@ -1,47 +1,43 @@
 package org.yashar.enchantedWanted.API;
 
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.yashar.enchantedWanted.storages.DatabaseManager;
 
 import java.util.UUID;
 
+@RequiredArgsConstructor
 public class WantedPlayer {
-    DatabaseManager databaseManager;
-    String prefix = "&8[&eEW&8]";
-    public WantedPlayer(DatabaseManager databaseManager) {
-        this.databaseManager = databaseManager;
-    }
+    private static final String PREFIX = "&8[&eEW&8]";
 
-    public int getWantedLevel(UUID uuid) {
+    private final DatabaseManager databaseManager;
+
+    public int getWantedLevel(@NonNull UUID uuid) {
         return databaseManager.getWanted(uuid);
     }
-    public void setWantedLevel(UUID uuid, int level) {
-        if (level < 0) {
-            throw new IllegalArgumentException(prefix + "[WantedAPI] Level cannot be negative!");
-        } else if (uuid == null) {
-            throw new IllegalArgumentException(prefix + "[WantedAPI] UUID cannot be null!");
-        }
+
+    public void setWantedLevel(@NonNull UUID uuid, int level) {
+        validateLevel(level);
         databaseManager.setWanted(uuid, level);
     }
-    public void addWantedLevel(UUID uuid,int level) {
-        if (level < 0) {
-            throw new IllegalArgumentException(prefix + "[WantedAPI] Level cannot be negative!");
-        } else if (uuid == null) {
-            throw new IllegalArgumentException(prefix + "[WantedAPI] UUID cannot be null!");
-        }
-        databaseManager.addWanted(uuid,level);
+
+    public void addWantedLevel(@NonNull UUID uuid, int level) {
+        validateLevel(level);
+        databaseManager.addWanted(uuid, level);
     }
-    public void removeWantedLevel(UUID uuid, int level) {
-        if (level < 0) {
-            throw new IllegalArgumentException(prefix + "[WantedAPI] Level cannot be negative!");
-        } else if (uuid == null) {
-            throw new IllegalArgumentException(prefix + "[WantedAPI] UUID cannot be null!");
-        }
-        databaseManager.removeWanted(uuid,level);
+
+    public void removeWantedLevel(@NonNull UUID uuid, int level) {
+        validateLevel(level);
+        databaseManager.removeWanted(uuid, level);
     }
-    public void clearWantedLevels(UUID uuid) {
-        if (uuid == null) {
-            throw new IllegalArgumentException(prefix + "[WantedAPI] UUID cannot be null!");
+
+    public void clearWantedLevels(@NonNull UUID uuid) {
+        databaseManager.setWanted(uuid, 0);
+    }
+
+    private void validateLevel(int level) {
+        if (level < 0) {
+            throw new IllegalArgumentException(PREFIX + "[WantedAPI] Level cannot be negative: " + level);
         }
-        databaseManager.setWanted(uuid,0);
     }
 }
